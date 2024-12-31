@@ -1,6 +1,9 @@
+import Link from "next/link"
+
 import { ExternalLink, GitFork, Star } from 'lucide-react'
 
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -29,20 +32,23 @@ export function ProjectCard({
                               url,
                             }: ProjectCardProps) {
   return (
-    <Card>
+    <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>{title}</span>
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-600"
-          >
-            <ExternalLink className="h-4 w-4" />
-          </a>
+          <div className={"flex items-center gap-2"}>
+            <Button variant={"outline"} size={"sm"}>Edit</Button>
+            <Link
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-600"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </Link>
+          </div>
         </CardTitle>
-        <Badge>{language}</Badge>
+        <Badge className={"w-fit"}>{language}</Badge>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-gray-500">{description}</p>

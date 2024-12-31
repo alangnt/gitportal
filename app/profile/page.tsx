@@ -33,7 +33,7 @@ import {
 import {Button} from "@/components/ui/button";
 
 // LUCIDE
-import {User2, MapPin, Globe, Twitter, Github, Mail, GitFork, GitPullRequest, Star } from "lucide-react";
+import {User2, MapPin, Globe, Twitter, Github, Mail, GitFork, GitPullRequest, Star, Plus } from "lucide-react";
 
 const createdProjects = [
   {
@@ -98,7 +98,7 @@ export default function UserProfilePage() {
 
           <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] px-4 max-lg:px-6 mt-4"}>
             <div className={"grid gap-8 md:grid-cols-2"}>
-              <Card>
+              <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
                 <CardHeader className="flex flex-row items-center gap-4">
                   <Avatar size={"xl"}>
                     <AvatarImage src={session?.user?.image!} className={"cursor-pointer"}/>
@@ -154,7 +154,7 @@ export default function UserProfilePage() {
               </Card>
 
               <section className="grid gap-4 md:grid-cols-2">
-                <Card>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
@@ -163,7 +163,7 @@ export default function UserProfilePage() {
                     <div className="text-2xl font-bold">23</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Contributions</CardTitle>
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
@@ -172,7 +172,7 @@ export default function UserProfilePage() {
                     <div className="text-2xl font-bold">20</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Stars</CardTitle>
                     <Star className="h-4 w-4 text-muted-foreground"/>
@@ -181,7 +181,7 @@ export default function UserProfilePage() {
                     <div className="text-2xl font-bold">21</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Forks</CardTitle>
                     <GitFork className="h-4 w-4 text-muted-foreground"/>
@@ -194,10 +194,14 @@ export default function UserProfilePage() {
             </div>
 
             <Tabs defaultValue="created" className="w-full">
-              <TabsList>
-                <TabsTrigger value="created">Created Projects</TabsTrigger>
-                <TabsTrigger value="contributed">Contributed Projects</TabsTrigger>
-              </TabsList>
+              <div className="flex items-center gap-2">
+                <TabsList className={"shadow"}>
+                  <TabsTrigger value="created">Created Projects</TabsTrigger>
+                  <TabsTrigger value="contributed">Contributed Projects</TabsTrigger>
+                </TabsList>
+
+                <Button variant={"outline"} className={"shadow"}><Plus /></Button>
+              </div>
               <TabsContent value="created">
                 <div className="grid gap-6 md:grid-cols-2">
                   {createdProjects.map((project) => (

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & { size?: "sm" | "md" | "lg" }
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & { size?: "sm" | "md" | "lg" | "xl" }
 >(({ className, size = "md", ...props }, ref) => {
   const sizeClasses = {
     sm: "h-6 w-6", // Small size
