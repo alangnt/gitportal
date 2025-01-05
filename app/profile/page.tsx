@@ -158,6 +158,7 @@ export default function UserProfilePage() {
   };
 
   const [editProjectFormData, setEditProjectFormData] = useState({
+    _id: "",
     title: "",
     description: "",
     language: "",
@@ -189,18 +190,13 @@ export default function UserProfilePage() {
   const handleSubmitEditUserForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Prepare the data to send in the request
     const data = {
       _id: userInfo?._id,
       ...editUserFormData
-
     };
 
-    console.log(data)
-
     try {
-      // Perform the API call to update user information
-      const response = await fetch('/api/editUsers', {
+      const response = await fetch('/api/users/editUser', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -208,23 +204,45 @@ export default function UserProfilePage() {
         body: JSON.stringify(data)
       });
 
-      // Handle the response
       const result = await response.json();
 
-      // Check if the update was successful
       if (response.ok) {
-        // Do something with the result (e.g., show a success message)
-        console.log('Update successful:', result);
+        window.location.reload();
       } else {
-        // Handle failure (e.g., show an error message)
         console.error('Error updating:', result.message);
       }
     } catch (error) {
-      // Handle fetch error (e.g., network issue)
       console.error('Request failed:', error);
     }
   };
 
+  const handleSubmitEditProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const data = {
+      ...editProjectFormData
+    }
+
+    try {
+      const response = await fetch('/api/projects/editProject', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        console.error('Error updating:', result.message);
+      }
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
+  }
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -243,6 +261,7 @@ export default function UserProfilePage() {
   useEffect(() => {
     if (selectedProject) {
       setEditProjectFormData({
+        _id: selectedProject._id || "",
         title: selectedProject.title || "",
         description: selectedProject.description || "",
         language: selectedProject.language || "",
@@ -294,33 +313,43 @@ export default function UserProfilePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <Globe className="h-4 w-4 text-gray-500" />
-                      <a href={"#"} className="text-blue-500 hover:underline">
+                      <Link
+                          // TODO: add a callback if links are not provided
+                          href={userInfo?.website || '#'}
+                          target="_blank"
+                          className="text-blue-500 hover:underline"
+                      >
                         {userInfo?.website || 'Website not provided'}
-                      </a>
+                      </Link>
                     </div>
                     <div className="flex items-center gap-2">
                       <Twitter className="h-4 w-4 text-gray-500" />
-                      <a
-                        href={"#"}
+                      <Link
+                        href={`https://twitter.com/${userInfo?.twitter || '#'}`}
+                        target={"_blank"}
                         className="text-blue-500 hover:underline"
                       >
-                        {userInfo?.twitter || 'Account not provided'}
-                      </a>
+                        @{userInfo?.twitter || 'Account not provided'}
+                      </Link>
                     </div>
                     <div className="flex items-center gap-2">
                       <Github className="h-4 w-4 text-gray-500" />
-                      <a
-                        href={"#"}
+                      <Link
+                        href={`https://github.com/${userInfo?.github || '#'}`}
+                        target="_blank"
                         className="text-blue-500 hover:underline"
                       >
-                        {userInfo?.github || 'Account not provided'}
-                      </a>
+                        @{userInfo?.github || 'Account not provided'}
+                      </Link>
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-gray-500" />
-                      <a href={"#"} className="text-blue-500 hover:underline">
+                      <Link
+                          href={`mailto:${userInfo?.email || ''}`}
+                          className="text-blue-500 hover:underline"
+                      >
                         {userInfo?.email || 'Email not provided'}
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <Dialog>
@@ -483,7 +512,7 @@ export default function UserProfilePage() {
                                         Make changes to your project here. Click save when you&apos;re done.
                                       </DialogDescription>
                                     </DialogHeader>
-                                    <form>
+                                    <form onSubmit={handleSubmitEditProjectForm}>
                                       <div className="grid gap-4 py-4">
                                         <div className="grid grid-cols-4 items-center gap-4">
                                           <Label htmlFor="title" className="text-right">
