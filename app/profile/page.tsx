@@ -1,7 +1,7 @@
 "use client"
 
 // REACT
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // AUTH
 import { useSession } from "next-auth/react";
@@ -9,13 +9,12 @@ import { redirect } from 'next/navigation';
 
 // COMPONENTS
 import Header from "@/components/Header";
-import { ProjectCard } from "@/components/core/project-card";
 
 // SHADCN
 import {
   Card,
   CardContent,
-  CardDescription,
+  CardDescription, CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -33,62 +32,237 @@ import {
 import {Button} from "@/components/ui/button";
 
 // LUCIDE
-import {User2, MapPin, Globe, Twitter, Github, Mail, GitFork, GitPullRequest, Star, Plus } from "lucide-react";
+import {
+  User2,
+  MapPin,
+  Globe,
+  Twitter,
+  Github,
+  Mail,
+  GitFork,
+  GitPullRequest,
+  Star,
+  Plus,
+  ExternalLink
+} from "lucide-react";
 
-const createdProjects = [
-  {
-    title: "Project A",
-    description: "A revolutionary open-source project",
-    language: "TypeScript",
-    stars: 1200,
-    forks: 300,
-    lastUpdated: "2 days ago",
-    url: "https://github.com/janedoe/project-a",
-  },
-  {
-    title: "Project B",
-    description: "An innovative tool for developers",
-    language: "Python",
-    stars: 800,
-    forks: 150,
-    lastUpdated: "1 week ago",
-    url: "https://github.com/janedoe/project-b",
-  },
-]
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription, DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import {Label} from "@/components/ui/label";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+import Link from "next/link";
+import {Badge} from "@/components/ui/badge";
 
-const contributedProjects = [
-  {
-    title: "Famous Project X",
-    description: "A popular open-source library",
-    language: "JavaScript",
-    stars: 10000,
-    forks: 2000,
-    lastUpdated: "1 day ago",
-    url: "https://github.com/famous/project-x",
-  },
-  {
-    title: "Awesome Tool Y",
-    description: "A widely used developer tool",
-    language: "Go",
-    stars: 5000,
-    forks: 800,
-    lastUpdated: "3 days ago",
-    url: "https://github.com/awesome/tool-y",
-  },
-]
+interface User {
+  _id: string;
+  name: string;
+  username: string;
+  image: string;
+  bio: string;
+  location: string;
+  website: string;
+  twitter: string;
+  github: string;
+  email: string;
+  totalProjects: number;
+  totalContributions: number;
+  totalStars: number;
+  totalForks: number;
+}
 
 export default function UserProfilePage() {
   const { data: session, status } = useSession();
 
+  // USERS
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [userFetched, setUserFetched] = useState(false);
+
+  // EDIT USER PROFILE
+  const [editUserInfo, setEditUserInfo] = useState<User | null>(null);
+
+  // const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // FETCH USER INFO
+  const fetchUserProfile = async () => {
+    try {
+      if (!session?.user?.email) {
+        throw new Error("User session is not available.");
+      }
+
+      const response = await fetch('/api/users');
+      if (!response?.ok) {
+        throw new Error('Failed to fetch user infos');
+      }
+
+      const data = await response.json();
+      const userInfos = data.data.filter(
+        (user: any) => user.email === session?.user?.email
+      );
+
+      if (userInfos.length === 0) {
+        throw new Error("No user found with the given email.");
+      }
+
+      const user = userInfos[0];
+      setUserInfo(user);
+      setUserFetched(true);
+
+      setLoading(false);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  // PROJECTS
+  const [projects, setProjects] = useState(undefined);
+  const [contributedProjects, setContributedProjects] = useState(undefined);
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  // FETCH USER'S PROJECTS
+  const fetchCreatedProjects = async () => {
+    console.log(userInfo)
+    if (!userInfo) return;
+
+    try {
+      const response = await fetch("/api/projects");
+      if (!response.ok) {
+        throw new Error("Failed to fetch projects");
+      }
+      const data = await response.json();
+
+      const contributedProjects = data.data.filter(
+        (project: any) => project.contributions && project.contributions[userInfo._id] === true
+      );
+      const userProjects = data.data.filter(
+        (project: any) => project.user === userInfo._id
+      );
+
+      setProjects(userProjects);
+      setContributedProjects(contributedProjects);
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const [editProjectFormData, setEditProjectFormData] = useState({
+    title: "",
+    description: "",
+    language: "",
+    url: ""
+  })
+
+  const [editUserFormData, setEditUserFormData] = useState({
+    bio: '',
+    location: '',
+    website: '',
+    twitter: '',
+    github: '',
+  })
+
+  const handleProjectInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setEditProjectFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleUserInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setEditUserFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmitEditUserForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Prepare the data to send in the request
+    const data = {
+      _id: userInfo?._id,
+      ...editUserFormData
+
+    };
+
+    console.log(data)
+
+    try {
+      // Perform the API call to update user information
+      const response = await fetch('/api/editUsers', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      // Handle the response
+      const result = await response.json();
+
+      // Check if the update was successful
+      if (response.ok) {
+        // Do something with the result (e.g., show a success message)
+        console.log('Update successful:', result);
+      } else {
+        // Handle failure (e.g., show an error message)
+        console.error('Error updating:', result.message);
+      }
+    } catch (error) {
+      // Handle fetch error (e.g., network issue)
+      console.error('Request failed:', error);
+    }
+  };
+
+
   useEffect(() => {
     if (status === "unauthenticated") {
-      redirect("/")
+      redirect("/");
+    } else if (status === "authenticated") {
+      if (userFetched) {
+        fetchCreatedProjects()
+      } else {
+        fetchUserProfile();
+      }
     }
-  }, [status])
 
-  if (status === "loading") {
-    return <div>Loading...</div>; // Optional loading state
-  }
+    console.log("Fetched user:");
+  }, [status, userFetched]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      setEditProjectFormData({
+        title: selectedProject.title || "",
+        description: selectedProject.description || "",
+        language: selectedProject.language || "",
+        url: selectedProject.url || "",
+      });
+    }
+
+    if (editUserInfo) {
+      setEditUserFormData({
+        bio: userInfo?.bio || "",
+        location: userInfo?.location || "",
+        website: userInfo?.website || "",
+        twitter: userInfo?.twitter || "",
+        github: userInfo?.github || "",
+      })
+    }
+  }, [selectedProject, editUserInfo]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
@@ -98,30 +272,30 @@ export default function UserProfilePage() {
 
           <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] px-4 max-lg:px-6 mt-4"}>
             <div className={"grid gap-8 md:grid-cols-2"}>
-              <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+              <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                 <CardHeader className="flex flex-row items-center gap-4">
                   <Avatar size={"xl"}>
-                    <AvatarImage src={session?.user?.image!} className={"cursor-pointer"}/>
+                    <AvatarImage src={session?.user?.image || userInfo?.image}/>
                     <AvatarFallback>
                       <User2 />
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle>name</CardTitle>
-                    <CardDescription>@username</CardDescription>
+                    <CardTitle>{userInfo?.name || 'User'}</CardTitle>
+                    <CardDescription>@{userInfo?.username || 'username'}</CardDescription>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="mb-4 text-sm text-gray-600">bio</p>
+                  <p className="mb-4 text-sm text-gray-600">{userInfo?.bio || "Hey, I'm new here"}</p>
                   <div className="mb-4 grid gap-2 text-sm">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-4 w-4 text-gray-500" />
-                      location
+                      {userInfo?.location || 'Location not provided'}
                     </div>
                     <div className="flex items-center gap-2">
                       <Globe className="h-4 w-4 text-gray-500" />
                       <a href={"#"} className="text-blue-500 hover:underline">
-                        website
+                        {userInfo?.website || 'Website not provided'}
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
@@ -130,7 +304,7 @@ export default function UserProfilePage() {
                         href={"#"}
                         className="text-blue-500 hover:underline"
                       >
-                        @twitter
+                        {userInfo?.twitter || 'Account not provided'}
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
@@ -139,55 +313,138 @@ export default function UserProfilePage() {
                         href={"#"}
                         className="text-blue-500 hover:underline"
                       >
-                        github
+                        {userInfo?.github || 'Account not provided'}
                       </a>
                     </div>
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4 text-gray-500" />
                       <a href={"#"} className="text-blue-500 hover:underline">
-                        email
+                        {userInfo?.email || 'Email not provided'}
                       </a>
                     </div>
                   </div>
-                  <Button className="w-full">Edit Profile</Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        className="w-full"
+                        onClick={() => setEditUserInfo(userInfo ? userInfo : null)}
+                      >Edit Profile</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle>Edit Profile</DialogTitle>
+                        <DialogDescription>
+                          Make changes to your profile here. Click save when you&apos;re done.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form onSubmit={handleSubmitEditUserForm}>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="bio" className="text-right">
+                              Bio
+                            </Label>
+                            <Textarea
+                              id="bio"
+                              name="bio"
+                              value={editUserFormData.bio}
+                              onChange={handleUserInfoChange}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="location" className="text-right">
+                              Location
+                            </Label>
+                            <Input
+                              id="location"
+                              name="location"
+                              value={editUserFormData.location}
+                              onChange={handleUserInfoChange}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="website" className="text-right">
+                              Website
+                            </Label>
+                            <Input
+                              id="website"
+                              name="website"
+                              value={editUserFormData.website}
+                              onChange={handleUserInfoChange}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="twitter" className="text-right">
+                              Twitter
+                            </Label>
+                            <Input
+                              id="twitter"
+                              name="twitter"
+                              value={editUserFormData.twitter}
+                              onChange={handleUserInfoChange}
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="github" className="text-right">
+                              GitHub
+                            </Label>
+                            <Input
+                              id="github"
+                              name="github"
+                              value={editUserFormData.github}
+                              onChange={handleUserInfoChange}
+                              className="col-span-3"
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button type="submit">Save changes</Button>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </CardContent>
               </Card>
 
               <section className="grid gap-4 md:grid-cols-2">
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+                <Card
+                  className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">23</div>
+                    <div className="text-2xl font-bold">{userInfo?.totalProjects || '0'}</div>
                   </CardContent>
                 </Card>
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Contributions</CardTitle>
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">20</div>
+                    <div className="text-2xl font-bold">{userInfo?.totalContributions || '0'}</div>
                   </CardContent>
                 </Card>
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Stars</CardTitle>
                     <Star className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">21</div>
+                    <div className="text-2xl font-bold">{userInfo?.totalStars || '0'}</div>
                   </CardContent>
                 </Card>
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Forks</CardTitle>
                     <GitFork className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">20</div>
+                    <div className="text-2xl font-bold">{userInfo?.totalForks || '0'}</div>
                   </CardContent>
                 </Card>
               </section>
@@ -203,18 +460,154 @@ export default function UserProfilePage() {
                 <Button variant={"outline"} className={"shadow"}><Plus /></Button>
               </div>
               <TabsContent value="created">
-                <div className="grid gap-6 md:grid-cols-2">
-                  {createdProjects.map((project) => (
-                    <ProjectCard key={project.title} {...project} />
-                  ))}
-                </div>
+                  {projects ? (
+                    <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+                      {projects.map((project: any) => (
+                        <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                          <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                              <span>{project.title}</span>
+                              <div className={"flex items-center gap-2"}>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant={"outline"}
+                                      size={"sm"}
+                                      onClick={() => setSelectedProject(project)}
+                                    >Edit</Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Project</DialogTitle>
+                                      <DialogDescription>
+                                        Make changes to your project here. Click save when you&apos;re done.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <form>
+                                      <div className="grid gap-4 py-4">
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                          <Label htmlFor="title" className="text-right">
+                                            Title
+                                          </Label>
+                                          <Input
+                                            id="title"
+                                            name="title"
+                                            value={editProjectFormData.title}
+                                            onChange={handleProjectInfoChange}
+                                            className="col-span-3"
+                                          />
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                          <Label htmlFor="description" className="text-right">
+                                            Description
+                                          </Label>
+                                          <Textarea
+                                            id="description"
+                                            name="description"
+                                            value={editProjectFormData.description}
+                                            onChange={handleProjectInfoChange}
+                                            className="col-span-3"
+                                          />
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                          <Label htmlFor="language" className="text-right">
+                                            Language
+                                          </Label>
+                                          <Input
+                                            id="language"
+                                            name="language"
+                                            value={editProjectFormData.language}
+                                            onChange={handleProjectInfoChange}
+                                            className="col-span-3"
+                                          />
+                                        </div>
+                                        <div className="grid grid-cols-4 items-center gap-4">
+                                          <Label htmlFor="url" className="text-right">
+                                            URL
+                                          </Label>
+                                          <Input
+                                            id="url"
+                                            name="url"
+                                            value={editProjectFormData.url}
+                                            onChange={handleProjectInfoChange}
+                                            className="col-span-3"
+                                          />
+                                        </div>
+                                      </div>
+                                      <DialogFooter>
+                                        <Button type="submit">Save changes</Button>
+                                      </DialogFooter>
+                                    </form>
+                                  </DialogContent>
+                                </Dialog>
+                                <Link
+                                  href={project.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-500 hover:text-blue-600"
+                                >
+                                  <ExternalLink className="h-4 w-4"/>
+                                </Link>
+                              </div>
+                            </CardTitle>
+                            <Badge className={"w-fit"}>{project.language}</Badge>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-sm text-gray-500">{project.description}</p>
+                          </CardContent>
+                          <CardFooter className="flex justify-between text-sm text-gray-500">
+                            <div className="flex items-center gap-4">
+                              <span className="flex items-center gap-1">
+                                <Star className="h-4 w-4"/>
+                                {project.stars}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <GitFork className="h-4 w-4"/>
+                                {project.forks}
+                              </span>
+                            </div>
+                            <div>Updated: {project.lastUpdated}</div>
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </section>
+                  ) : (
+                    <div>No projects created</div>
+                  )}
               </TabsContent>
               <TabsContent value="contributed">
-                <div className="grid gap-6 md:grid-cols-2">
-                  {contributedProjects.map((project) => (
-                    <ProjectCard key={project.title} {...project} />
-                  ))}
-                </div>
+                {contributedProjects && contributedProjects.length > 0 ? (
+                  <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+                    {contributedProjects.map((project: any) => (
+                      <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                        <CardHeader>
+                          <CardTitle className="flex items-center justify-between">
+                            <span>{project.title}</span>
+                          </CardTitle>
+                          <Badge className={"w-fit"}>{project.language}</Badge>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-gray-500">{project.description}</p>
+                        </CardContent>
+                        <CardFooter className="flex justify-between text-sm text-gray-500">
+                          <div className="flex items-center gap-4">
+                              <span className="flex items-center gap-1">
+                                <Star className="h-4 w-4"/>
+                                {project.stars}
+                              </span>
+                            <span className="flex items-center gap-1">
+                                <GitFork className="h-4 w-4"/>
+                              {project.forks}
+                              </span>
+                          </div>
+                          <div>Updated: {project.lastUpdated}</div>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                  </section>
+                ) : (
+                  <div>No projects contributed</div>
+                )}
               </TabsContent>
             </Tabs>
           </main>

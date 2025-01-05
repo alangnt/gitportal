@@ -30,13 +30,18 @@ import Link from "next/link";
 
 import {SidebarTrigger} from "@/components/ui/sidebar";
 
+import { User2 } from "lucide-react"
+
 export default function Header() {
   const { data: session, status } = useSession();
 
-  function getFirstTwoCapitalLetters(str?: string | null) {
-    const match = (str ?? "").match(/[A-Z]/g);
-    return match ? match.slice(0, 2).join("") : "US";
-  }
+  const handleGitHubSignIn = async () => {
+    try {
+      const response = await signIn("github", { redirect: false });
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+    }
+  };
 
   return (
     <header className={"flex max-sm:flex-col sm:justify-between border-b-[1px] px-2 max-lg:pr-6"}>
@@ -66,7 +71,7 @@ export default function Header() {
                 <Avatar>
                   <AvatarImage src={session?.user?.image!} className={"cursor-pointer"}/>
                   <AvatarFallback>
-                    {getFirstTwoCapitalLetters(session?.user?.name)}
+                    <User2 />
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
@@ -110,9 +115,7 @@ export default function Header() {
                     <Button
                       type="submit"
                       className={"w-full"}
-                      onClick={() => {
-                        signIn("github");
-                      }}
+                      onClick={handleGitHubSignIn}
                     >
                       <GitHubIcon/>
                       <span>Sign In</span>
