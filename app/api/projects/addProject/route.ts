@@ -51,6 +51,14 @@ export async function POST(req: NextRequest) {
       updatedAt: data.updatedAt,
     };
 
+    const existingProject = await collection.findOne({ url: projectUrl });
+    if (existingProject) {
+      return NextResponse.json(
+          { message: "Project already exists"},
+          { status: 409 }
+      );
+    }
+
     const result = await collection.insertOne(newProject);
 
     return NextResponse.json(

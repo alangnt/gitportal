@@ -43,7 +43,8 @@ import {
   GitPullRequest,
   Star,
   Plus,
-  ExternalLink
+  ExternalLink,
+  Trash2
 } from "lucide-react";
 
 import {
@@ -194,8 +195,11 @@ export default function UserProfilePage() {
     setEditUserFormData((prev) => ({ ...prev, [name]: value }))
   }
 
+  const [editUserLoading, setEditUserLoading] = useState<boolean>(false);
+
   const handleSubmitEditUserForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setEditUserLoading(true);
 
     const data = {
       _id: userInfo?._id,
@@ -220,11 +224,18 @@ export default function UserProfilePage() {
       }
     } catch (error) {
       console.error('Request failed:', error);
+    } finally {
+      setEditUserLoading(false);
     }
   };
 
+  // ADD PROJECT ERROR MESSAGE
+  const [addProjectError, setAddProjectError] = useState<string | null>(null);
+  const [addProjectLoading, setAddProjectLoading] = useState(false);
+
   const handleSubmitAddProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setAddProjectLoading(true);
 
     const data = {
       _id: userInfo?._id,
@@ -246,10 +257,15 @@ export default function UserProfilePage() {
       if (response.ok) {
         window.location.reload();
       } else {
+        if (response.status === 409) {
+          setAddProjectError("Project already exists");
+        }
         console.error('Error adding:', result.message);
       }
     } catch (error) {
       console.error('Request failed:', error);
+    } finally {
+      setAddProjectLoading(false);
     }
   }
 
@@ -280,6 +296,40 @@ export default function UserProfilePage() {
       }
     } catch (error) {
       console.error('Request failed:', error);
+    }
+  }
+
+  const [deleteProjectLoading, setDeleteProjectLoading] = useState(false);
+
+  const handleDeleteProject = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setDeleteProjectLoading(true);
+
+    const data = {
+      user: userInfo?.github,
+      title: selectedProject?.title
+    }
+
+    try {
+      const response = await fetch('/api/projects/deleteProject', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        console.error('Error deleting:', result.message);
+      }
+    } catch (error) {
+      console.error('Request failed:', error);
+    } finally {
+      setDeleteProjectLoading(false);
     }
   }
 
@@ -323,7 +373,7 @@ export default function UserProfilePage() {
         <>
           <Header />
 
-          <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] px-4 max-lg:px-6 mt-4"}>
+          <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] px-4 max-lg:px-6 mt-4 mb-10"}>
             <div className={"grid gap-8 md:grid-cols-2"}>
               <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                 <CardHeader className="flex flex-row items-center gap-4">
@@ -464,7 +514,7 @@ export default function UserProfilePage() {
                           </div>
                         </div>
                         <DialogFooter>
-                          <Button type="submit">Save changes</Button>
+                          <Button type="submit">{editUserLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
                         </DialogFooter>
                       </form>
                     </DialogContent>
@@ -480,7 +530,7 @@ export default function UserProfilePage() {
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{userInfo?.totalProjects || '0'}</div>
+                    <div className="text-2xl font-bold">{projects?.length || '0'}</div>
                   </CardContent>
                 </Card>
                 <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
@@ -550,8 +600,12 @@ export default function UserProfilePage() {
                         </div>
                       </div>
                       <DialogFooter>
-                        <Button type="submit">Save changes</Button>
+                        <Button type="submit">{addProjectLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
                       </DialogFooter>
+
+                      {addProjectError ? (
+                          <div className={"text-sm text-center text-red-500 mt-4"}>{addProjectError}</div>
+                      ) : null}
                     </form>
                   </DialogContent>
                 </Dialog>
@@ -560,11 +614,31 @@ export default function UserProfilePage() {
                   {projects ? (
                     <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
                       {projects.map((project: any) => (
-                        <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                        <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-46"} key={project._id}>
                           <CardHeader>
                             <CardTitle className="flex items-center justify-between">
                               <span>{project.title}</span>
                               <div className={"flex items-center gap-2"}>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                        size={"sm"}
+                                        variant={"outline"}
+                                        className={"bg-red-300 text-red-500 hover:bg-red-400 hover:text-red-600"}
+                                        onClick={() => setSelectedProject(project)}
+                                    ><Trash2 /></Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[425px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Are you sure ?</DialogTitle>
+                                    </DialogHeader>
+                                    <form onSubmit={handleDeleteProject}>
+                                      <DialogFooter>
+                                        <Button type="submit">{deleteProjectLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Delete project"}</Button>
+                                      </DialogFooter>
+                                    </form>
+                                  </DialogContent>
+                                </Dialog>
                                 <Dialog>
                                   <DialogTrigger asChild>
                                     <Button
@@ -611,10 +685,10 @@ export default function UserProfilePage() {
                                 </Link>
                               </div>
                             </CardTitle>
-                            <Badge className={"w-fit"}>{project.language}</Badge>
+                            <Badge className={"w-fit"}>{project.language ? project.language : "No particular language"}</Badge>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-sm text-gray-500">{project.description}</p>
+                            <p className="text-sm text-gray-500 truncate">{project.description}</p>
                           </CardContent>
                           <CardFooter className="flex justify-between text-sm text-gray-500">
                             <div className="flex items-center gap-4">
@@ -645,7 +719,7 @@ export default function UserProfilePage() {
                           <CardTitle className="flex items-center justify-between">
                             <span>{project.title}</span>
                           </CardTitle>
-                          <Badge className={"w-fit"}>{project.language}</Badge>
+                          <Badge className={"w-fit"}>{project.language ? project.language : "No particular language"}</Badge>
                         </CardHeader>
                         <CardContent>
                           <p className="text-sm text-gray-500">{project.description}</p>
