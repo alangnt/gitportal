@@ -8,12 +8,11 @@ export async function PATCH(req: NextRequest) {
         const db = client.db("opensourcefinder");
         const collection = db.collection("projects");
 
-        const { _id, title, description, language, url } = await req.json();
-
-        if (!_id) {
+        const { _id, userId, user, title } : { _id: string, userId: string, user: string, title: string } = await req.json();
+        if (!_id || !title) {
             return NextResponse.json(
-                { message: "The '_id' field is required." },
-                { status: 400 }
+              {message: "_id and title are required"},
+              {status: 400}
             );
         }
 
@@ -27,22 +26,45 @@ export async function PATCH(req: NextRequest) {
             );
         }
 
-        const updateData = Object.fromEntries(
-            Object.entries({ title, description, language, url }).filter(
-                ([_, value]) => value !== undefined
-            )
-        );
+        const baseUrl =
+          process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+        const apiUrl = `${baseUrl}/api/github?owner=${user}&repo=${title}`;
 
-        if (Object.keys(updateData).length === 0) {
+        const response = await fetch(apiUrl, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
             return NextResponse.json(
-                { message: "No fields to update." },
-                { status: 400 }
+              { message: "Failed to fetch GitHub data", status: response.status },
+              { status: 400 }
             );
+        }
+
+        const data = await response.json();
+
+        if (!data) {
+            return NextResponse.json({ status: 400 });
+        }
+
+        const projectUrl = `https://github.com/${user}/${title}`;
+
+        const updateData = {
+            title: title,
+            description: data.description,
+            stars: data.stars,
+            forks: data.forks,
+            language: data.language,
+            url: projectUrl,
+            user: userId,
+            addedAt: new Date(),
+            updatedAt: data.updatedAt,
         }
 
         const result = await collection.updateOne(
             { _id: objectId },
-            { $set: updateData }
+            { $set: updateData },
         );
 
         if (result.matchedCount === 0) {

@@ -131,7 +131,6 @@ export default function UserProfilePage() {
 
   // FETCH USER'S PROJECTS
   const fetchCreatedProjects = async () => {
-    console.log(userInfo)
     if (!userInfo) return;
 
     try {
@@ -157,12 +156,13 @@ export default function UserProfilePage() {
     }
   };
 
+  const [addProjectFormData, setAddProjectFormData] = useState({
+    title: ''
+  })
+
   const [editProjectFormData, setEditProjectFormData] = useState({
     _id: "",
     title: "",
-    description: "",
-    language: "",
-    url: ""
   })
 
   const [editUserFormData, setEditUserFormData] = useState({
@@ -173,7 +173,14 @@ export default function UserProfilePage() {
     github: '',
   })
 
-  const handleProjectInfoChange = (
+  const handleAddProjectInfoChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setAddProjectFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleEditProjectInfoChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target
@@ -216,10 +223,42 @@ export default function UserProfilePage() {
     }
   };
 
+  const handleSubmitAddProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const data = {
+      _id: userInfo?._id,
+      user: userInfo?.github,
+      ...addProjectFormData
+    }
+
+    try {
+      const response = await fetch('/api/projects/addProject', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        console.error('Error adding:', result.message);
+      }
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
+  }
+
   const handleSubmitEditProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const data = {
+      userId: userInfo?._id,
+      user: userInfo?.github,
       ...editProjectFormData
     }
 
@@ -254,19 +293,14 @@ export default function UserProfilePage() {
         fetchUserProfile();
       }
     }
-
-    console.log("Fetched user:");
   }, [status, userFetched]);
 
   useEffect(() => {
     if (selectedProject) {
       setEditProjectFormData({
-        _id: selectedProject._id || "",
-        title: selectedProject.title || "",
-        description: selectedProject.description || "",
-        language: selectedProject.language || "",
-        url: selectedProject.url || "",
-      });
+        _id: selectedProject._id || '',
+        title: selectedProject.title || ''
+      })
     }
 
     if (editUserInfo) {
@@ -291,7 +325,7 @@ export default function UserProfilePage() {
 
           <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] px-4 max-lg:px-6 mt-4"}>
             <div className={"grid gap-8 md:grid-cols-2"}>
-              <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+              <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                 <CardHeader className="flex flex-row items-center gap-4">
                   <Avatar size={"xl"}>
                     <AvatarImage src={session?.user?.image || userInfo?.image}/>
@@ -440,7 +474,7 @@ export default function UserProfilePage() {
 
               <section className="grid gap-4 md:grid-cols-2">
                 <Card
-                  className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+                  className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
@@ -449,7 +483,7 @@ export default function UserProfilePage() {
                     <div className="text-2xl font-bold">{userInfo?.totalProjects || '0'}</div>
                   </CardContent>
                 </Card>
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+                <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Contributions</CardTitle>
                     <GitPullRequest className="h-4 w-4 text-muted-foreground"/>
@@ -458,7 +492,7 @@ export default function UserProfilePage() {
                     <div className="text-2xl font-bold">{userInfo?.totalContributions || '0'}</div>
                   </CardContent>
                 </Card>
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+                <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Stars</CardTitle>
                     <Star className="h-4 w-4 text-muted-foreground"/>
@@ -467,7 +501,7 @@ export default function UserProfilePage() {
                     <div className="text-2xl font-bold">{userInfo?.totalStars || '0'}</div>
                   </CardContent>
                 </Card>
-                <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+                <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Forks</CardTitle>
                     <GitFork className="h-4 w-4 text-muted-foreground"/>
@@ -486,13 +520,47 @@ export default function UserProfilePage() {
                   <TabsTrigger value="contributed">Contributed Projects</TabsTrigger>
                 </TabsList>
 
-                <Button variant={"outline"} className={"shadow"}><Plus /></Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={"shadow"}
+                    ><Plus /></Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Add a project</DialogTitle>
+                      <DialogDescription>
+                        Add your project here. Click save when you&apos;re done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmitAddProjectForm}>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="title" className="text-right">
+                            Title
+                          </Label>
+                          <Input
+                            id="title"
+                            name="title"
+                            value={addProjectFormData.title}
+                            onChange={handleAddProjectInfoChange}
+                            className="col-span-3"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Save changes</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
               <TabsContent value="created">
                   {projects ? (
                     <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
                       {projects.map((project: any) => (
-                        <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                        <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
                           <CardHeader>
                             <CardTitle className="flex items-center justify-between">
                               <span>{project.title}</span>
@@ -522,43 +590,7 @@ export default function UserProfilePage() {
                                             id="title"
                                             name="title"
                                             value={editProjectFormData.title}
-                                            onChange={handleProjectInfoChange}
-                                            className="col-span-3"
-                                          />
-                                        </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                          <Label htmlFor="description" className="text-right">
-                                            Description
-                                          </Label>
-                                          <Textarea
-                                            id="description"
-                                            name="description"
-                                            value={editProjectFormData.description}
-                                            onChange={handleProjectInfoChange}
-                                            className="col-span-3"
-                                          />
-                                        </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                          <Label htmlFor="language" className="text-right">
-                                            Language
-                                          </Label>
-                                          <Input
-                                            id="language"
-                                            name="language"
-                                            value={editProjectFormData.language}
-                                            onChange={handleProjectInfoChange}
-                                            className="col-span-3"
-                                          />
-                                        </div>
-                                        <div className="grid grid-cols-4 items-center gap-4">
-                                          <Label htmlFor="url" className="text-right">
-                                            URL
-                                          </Label>
-                                          <Input
-                                            id="url"
-                                            name="url"
-                                            value={editProjectFormData.url}
-                                            onChange={handleProjectInfoChange}
+                                            onChange={handleEditProjectInfoChange}
                                             className="col-span-3"
                                           />
                                         </div>
@@ -608,7 +640,7 @@ export default function UserProfilePage() {
                 {contributedProjects && contributedProjects.length > 0 ? (
                   <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
                     {contributedProjects.map((project: any) => (
-                      <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                      <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
                         <CardHeader>
                           <CardTitle className="flex items-center justify-between">
                             <span>{project.title}</span>
