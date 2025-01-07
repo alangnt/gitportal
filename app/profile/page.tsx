@@ -196,10 +196,7 @@ export default function UserProfilePage() {
 
     };
 
-    console.log(data)
-
     try {
-      // Perform the API call to update user information
       const response = await fetch('/api/editUsers', {
         method: 'PATCH',
         headers: {
@@ -208,19 +205,14 @@ export default function UserProfilePage() {
         body: JSON.stringify(data)
       });
 
-      // Handle the response
       const result = await response.json();
 
-      // Check if the update was successful
       if (response.ok) {
-        // Do something with the result (e.g., show a success message)
         console.log('Update successful:', result);
       } else {
-        // Handle failure (e.g., show an error message)
         console.error('Error updating:', result.message);
       }
     } catch (error) {
-      // Handle fetch error (e.g., network issue)
       console.error('Request failed:', error);
     }
   };
