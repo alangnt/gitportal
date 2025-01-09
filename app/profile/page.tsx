@@ -260,6 +260,9 @@ export default function UserProfilePage() {
         if (response.status === 409) {
           setAddProjectError("Project already exists");
         }
+        if (response.status === 410) {
+          setAddProjectError("Project doesn't exist");
+        }
         console.error('Error adding:', result.message);
       }
     } catch (error) {
@@ -269,6 +272,7 @@ export default function UserProfilePage() {
     }
   }
 
+  const [editProjectError, setEditProjectError] = useState<string | null>(null);
   const [editProjectLoading, setEditProjectLoading] = useState(false);
 
   const handleSubmitEditProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -295,6 +299,12 @@ export default function UserProfilePage() {
       if (response.ok) {
         window.location.reload();
       } else {
+        if (response.status === 409) {
+          setEditProjectError("Project already exists");
+        }
+        if (response.status === 410) {
+          setEditProjectError("Project doesn't exist");
+        }
         console.error('Error updating:', result.message);
       }
     } catch (error) {
@@ -676,6 +686,9 @@ export default function UserProfilePage() {
                                         </Dialog>
                                         <Button type="submit">{editProjectLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
                                       </DialogFooter>
+                                      {editProjectError ? (
+                                        <div className={"text-sm text-center text-red-500 mt-4"}>{editProjectError}</div>
+                                      ) : null}
                                     </form>
                                   </DialogContent>
                                 </Dialog>

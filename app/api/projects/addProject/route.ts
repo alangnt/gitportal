@@ -33,8 +33,11 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
 
-    if (!data) {
-      return NextResponse.json({ status: 400 });
+    if (response.status !== 200) {
+      return NextResponse.json(
+        { message: "Project doesn't exist"},
+        { status: 410 }
+      );
     }
 
     const projectUrl = `https://github.com/${user}/${title}`;

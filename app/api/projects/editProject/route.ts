@@ -30,23 +30,18 @@ export async function PATCH(req: NextRequest) {
           process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
         const apiUrl = `${baseUrl}/api/github?owner=${user}&repo=${title}`;
 
-        // TODO: fix this part and do the same in addProject
         const response = await fetch(apiUrl, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
         });
 
-        if (!response.ok) {
-            return NextResponse.json(
-              { message: "Failed to fetch GitHub data", status: response.status },
-              { status: 400 }
-            );
-        }
-
         const data = await response.json();
 
-        if (!data) {
-            return NextResponse.json({ status: 400 });
+        if (response.status !== 200) {
+            return NextResponse.json(
+              { message: "Project doesn't exist"},
+              { status: 410 }
+            );
         }
 
         const projectUrl = `https://github.com/${user}/${title}`;
