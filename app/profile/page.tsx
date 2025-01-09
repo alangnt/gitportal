@@ -269,8 +269,11 @@ export default function UserProfilePage() {
     }
   }
 
+  const [editProjectLoading, setEditProjectLoading] = useState(false);
+
   const handleSubmitEditProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setEditProjectLoading(true);
 
     const data = {
       userId: userInfo?._id,
@@ -296,6 +299,8 @@ export default function UserProfilePage() {
       }
     } catch (error) {
       console.error('Request failed:', error);
+    } finally {
+      setEditProjectLoading(false);
     }
   }
 
@@ -373,7 +378,7 @@ export default function UserProfilePage() {
         <>
           <Header />
 
-          <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] px-4 max-lg:px-6 mt-4 mb-10"}>
+          <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-10"}>
             <div className={"grid gap-8 md:grid-cols-2"}>
               <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                 <CardHeader className="flex flex-row items-center gap-4">
@@ -622,26 +627,6 @@ export default function UserProfilePage() {
                                 <Dialog>
                                   <DialogTrigger asChild>
                                     <Button
-                                        size={"sm"}
-                                        variant={"outline"}
-                                        className={"bg-red-300 text-red-500 hover:bg-red-400 hover:text-red-600"}
-                                        onClick={() => setSelectedProject(project)}
-                                    ><Trash2 /></Button>
-                                  </DialogTrigger>
-                                  <DialogContent className="sm:max-w-[425px]">
-                                    <DialogHeader>
-                                      <DialogTitle>Are you sure ?</DialogTitle>
-                                    </DialogHeader>
-                                    <form onSubmit={handleDeleteProject}>
-                                      <DialogFooter>
-                                        <Button type="submit">{deleteProjectLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Delete project"}</Button>
-                                      </DialogFooter>
-                                    </form>
-                                  </DialogContent>
-                                </Dialog>
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button
                                       variant={"outline"}
                                       size={"sm"}
                                       onClick={() => setSelectedProject(project)}
@@ -670,7 +655,26 @@ export default function UserProfilePage() {
                                         </div>
                                       </div>
                                       <DialogFooter>
-                                        <Button type="submit">Save changes</Button>
+                                        <Dialog>
+                                          <DialogTrigger asChild>
+                                            <Button
+                                              variant={"outline"}
+                                              className={"bg-red-300 text-red-500 hover:bg-red-400 hover:text-red-600"}
+                                              onClick={() => setSelectedProject(project)}
+                                            ><Trash2 /></Button>
+                                          </DialogTrigger>
+                                          <DialogContent className="sm:max-w-[425px]">
+                                            <DialogHeader>
+                                              <DialogTitle>Are you sure ?</DialogTitle>
+                                            </DialogHeader>
+                                            <form onSubmit={handleDeleteProject}>
+                                              <DialogFooter>
+                                                <Button type="submit">{deleteProjectLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Delete project"}</Button>
+                                              </DialogFooter>
+                                            </form>
+                                          </DialogContent>
+                                        </Dialog>
+                                        <Button type="submit">{editProjectLoading ? <span className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
                                       </DialogFooter>
                                     </form>
                                   </DialogContent>

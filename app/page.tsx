@@ -98,7 +98,7 @@ export default function Home() {
     <>
       <Header />
 
-      <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1024px] max-lg:px-6 mt-4"}>
+      <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1280px] max-lg:px-6 mt-4"}>
         <section className={"w-full"}>
           <Input
             type="text"

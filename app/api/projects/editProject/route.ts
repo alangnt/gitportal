@@ -30,6 +30,7 @@ export async function PATCH(req: NextRequest) {
           process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
         const apiUrl = `${baseUrl}/api/github?owner=${user}&repo=${title}`;
 
+        // TODO: fix this part and do the same in addProject
         const response = await fetch(apiUrl, {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -60,6 +61,14 @@ export async function PATCH(req: NextRequest) {
             user: userId,
             addedAt: new Date(),
             updatedAt: data.updatedAt,
+        }
+
+        const existingProject = await collection.findOne({ url: projectUrl });
+        if (existingProject) {
+            return NextResponse.json(
+              { message: "Project already exists"},
+              { status: 409 }
+            );
         }
 
         const result = await collection.updateOne(
