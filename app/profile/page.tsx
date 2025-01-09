@@ -378,7 +378,7 @@ export default function UserProfilePage() {
         <>
           <Header />
 
-          <main className={"flex flex-col place-self-center gap-4 grow w-full max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-10"}>
+          <main className={"flex flex-col gap-4 grow w-full max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-10"}>
             <div className={"grid gap-8 md:grid-cols-2"}>
               <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
                 <CardHeader className="flex flex-row items-center gap-4">

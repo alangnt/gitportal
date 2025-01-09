@@ -45,7 +45,7 @@ export default async function RootLayout({
         defaultOpen={defaultOpen}
       >
         <AppSidebar />
-        <div className={"w-full"}>
+        <div className={"flex flex-col items-center w-full"}>
           {children}
         </div>
       </SidebarProvider>

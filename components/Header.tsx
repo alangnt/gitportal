@@ -44,7 +44,7 @@ export default function Header() {
   };
 
   return (
-    <header className={"flex max-sm:flex-col sm:justify-between border-b-[1px] px-2 max-lg:pr-6"}>
+    <header className={"flex max-sm:flex-col sm:justify-between border-b-[1px] w-full px-2 max-lg:pr-6"}>
       <div className={"flex items-center"}>
         {status === "authenticated" && (
           <SidebarTrigger />
