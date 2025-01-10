@@ -79,7 +79,7 @@ export default function Header() {
                 <DropdownMenuItem
                   className={"cursor-pointer"}
                 >
-                  <Link href={"/profile"}>
+                  <Link href={"/profile"} className={"w-full"}>
                     Profile
                   </Link>
                 </DropdownMenuItem>

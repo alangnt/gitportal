@@ -42,6 +42,13 @@ export async function POST(req: NextRequest) {
 
     const projectUrl = `https://github.com/${user}/${title}`;
 
+    let formattedUpdatedDate = "Never updated"
+    if (data.updatedAt) {
+      const updatedDate = new Date(data.updatedAt);
+      const options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+      formattedUpdatedDate = updatedDate.toLocaleDateString('en-US', options);
+    }
+
     const newProject = {
       title: title,
       description: data.description,
@@ -51,7 +58,7 @@ export async function POST(req: NextRequest) {
       url: projectUrl,
       user: _id,
       addedAt: new Date(),
-      updatedAt: data.updatedAt,
+      updatedAt: formattedUpdatedDate,
     };
 
     const existingProject = await collection.findOne({ url: projectUrl });

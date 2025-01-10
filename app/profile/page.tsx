@@ -130,6 +130,9 @@ export default function UserProfilePage() {
   const [contributedProjects, setContributedProjects] = useState(undefined);
   const [selectedProject, setSelectedProject] = useState(null);
 
+  const [totalStars, setTotalStars] = useState(0);
+  const [totalForks, setTotalForks] = useState(0);
+
   // FETCH USER'S PROJECTS
   const fetchCreatedProjects = async () => {
     if (!userInfo) return;
@@ -148,8 +151,15 @@ export default function UserProfilePage() {
         (project: any) => project.user === userInfo._id
       );
 
+      const sumTotalStars = userProjects.reduce((acc: number, project: any) => acc + project.stars, 0);
+      setTotalStars(sumTotalStars);
+
+      const sumTotalForks = userProjects.reduce((acc: number, project: any) => acc + project.forks, 0);
+      setTotalForks(sumTotalForks);
+
       setProjects(userProjects);
       setContributedProjects(contributedProjects);
+
       setLoading(false);
     } catch (err: any) {
       setError(err.message);
@@ -260,7 +270,7 @@ export default function UserProfilePage() {
         if (response.status === 409) {
           setAddProjectError("Project already exists");
         }
-        if (response.status === 410) {
+        if (response.status === 400) {
           setAddProjectError("Project doesn't exist");
         }
         console.error('Error adding:', result.message);
@@ -353,7 +363,7 @@ export default function UserProfilePage() {
       redirect("/");
     } else if (status === "authenticated") {
       if (userFetched) {
-        fetchCreatedProjects()
+        fetchCreatedProjects();
       } else {
         fetchUserProfile();
       }
@@ -563,7 +573,7 @@ export default function UserProfilePage() {
                     <Star className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{userInfo?.totalStars || '0'}</div>
+                    <div className="text-2xl font-bold">{totalStars}</div>
                   </CardContent>
                 </Card>
                 <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
@@ -572,7 +582,7 @@ export default function UserProfilePage() {
                     <GitFork className="h-4 w-4 text-muted-foreground"/>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{userInfo?.totalForks || '0'}</div>
+                    <div className="text-2xl font-bold">{totalForks}</div>
                   </CardContent>
                 </Card>
               </section>
@@ -718,7 +728,7 @@ export default function UserProfilePage() {
                                 {project.forks}
                               </span>
                             </div>
-                            <div>Updated: {project.lastUpdated}</div>
+                            <div>Updated: {project.updatedAt}</div>
                           </CardFooter>
                         </Card>
                       ))}
