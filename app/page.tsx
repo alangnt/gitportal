@@ -180,7 +180,7 @@ export default function Home() {
     <>
       <Header />
 
-      <main className={"flex flex-col gap-4 grow w-full max-w-[1280px] max-lg:px-6 mt-4"}>
+      <main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4"}>
         <section className={"w-full"}>
           <Input
             type="text"
@@ -192,7 +192,7 @@ export default function Home() {
         </section>
 
         {projects && projects.length > 0 ? (
-          <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+          <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
             {projects.map((project: any) => (
               <Dialog>
                 <DialogTrigger asChild>
@@ -227,7 +227,7 @@ export default function Home() {
                       <Badge className={"w-fit"}>{project.language}</Badge>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-gray-500 truncate">{project.description}</p>
+                      <p className="text-sm text-gray-500 md:truncate">{project.description}</p>
                     </CardContent>
                     <CardFooter className="flex justify-between text-sm text-gray-500">
                       <div className="flex items-center gap-4">

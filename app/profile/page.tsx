@@ -728,7 +728,7 @@ export default function UserProfilePage() {
                             <Badge className={"w-fit"}>{project.language ? project.language : "No particular language"}</Badge>
                           </CardHeader>
                           <CardContent>
-                            <p className="text-sm text-gray-500 truncate">{project.description}</p>
+                            <p className="text-sm text-gray-500 md:truncate">{project.description}</p>
                           </CardContent>
                           <CardFooter className="flex justify-between text-sm text-gray-500">
                             <div className="flex items-center gap-4">
