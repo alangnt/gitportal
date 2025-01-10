@@ -13,19 +13,36 @@ import { useSession } from "next-auth/react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {Badge} from "@/components/ui/badge";
+import {Button} from "@/components/ui/button";
 
 // LUCIDE
-import {Star, GitFork, ExternalLink} from "lucide-react";
+import { Star, GitFork, ExternalLink, Heart } from "lucide-react";
 
 // HEADER
 import Header from "@/components/Header";
-import {Badge} from "@/components/ui/badge";
+
+interface User {
+  _id: string;
+  name: string;
+  username: string;
+  image: string;
+  bio: string;
+  location: string;
+  website: string;
+  twitter: string;
+  github: string;
+  email: string;
+  totalProjects: number;
+  totalContributions: number;
+  totalStars: number;
+  totalForks: number;
+}
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -36,6 +53,7 @@ export default function Home() {
 
   // PROJECTS
   const [projects, setProjects] = useState(undefined);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   // SEARCHBAR
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,8 +70,6 @@ export default function Home() {
         throw new Error('Failed to fetch projects');
       }
       const data = await response.json();
-      // TODO: think about keeping the filtered projects or not
-      // const userProjects = data.data.filter((project: any) => project.user === "6771474072a98abcc8c860fd");
 
       if (searchQuery.trim() !== "") {
         const filteredBySearch = data.data.filter((project: any) => project.title && project.title.toLowerCase().includes(searchQuery));
@@ -83,13 +99,69 @@ export default function Home() {
     const result = await response.json();
   }
 
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+
+  // FETCH USER INFO
+  const fetchUserProfile = async () => {
+    try {
+      if (!session?.user?.email) {
+        throw new Error("User session is not available.");
+      }
+
+      const response = await fetch('/api/users');
+      if (!response?.ok) {
+        throw new Error('Failed to fetch user infos');
+      }
+
+      const data = await response.json();
+      const userInfos = data.data.filter(
+          (user: any) => user.email === session?.user?.email
+      );
+
+      if (userInfos.length === 0) {
+        throw new Error("No user found with the given email.");
+      }
+
+      const user = userInfos[0];
+      setUserInfo(user);
+
+      setLoading(false);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleLikeProject = async (_id: string) => {
+    try {
+      const data = {
+        _id: _id,
+        userId: userInfo?._id,
+      }
+
+      const response = await fetch('/api/projects/likeProject', {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
+  }
+
   useEffect(() => {
     if (status === "authenticated") {
       createUserProfile();
+      fetchUserProfile();
     }
 
     fetchProjects();
-  }, [status, searchQuery]); // Empty dependency array ensures this runs once on mount
+  }, [status, searchQuery]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -116,19 +188,27 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>{project.title}</span>
-                    <Link
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:text-blue-600"
-                    >
-                      <ExternalLink className="h-4 w-4"/>
-                    </Link>
+                    <div className={"flex items-center gap-1"}>
+                      <Button
+                          variant={"ghost"}
+                          onClick={() => {
+                            handleLikeProject(project._id);
+                          }}
+                      ><Heart className={"text-red-500"} fill={"red"} /></Button>
+                      <Link
+                          href={project.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:text-blue-600"
+                      >
+                        <ExternalLink className="h-4 w-4"/>
+                      </Link>
+                    </div>
                   </CardTitle>
                   <Badge className={"w-fit"}>{project.language}</Badge>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-500">{project.description}</p>
+                  <p className="text-sm text-gray-500 truncate">{project.description}</p>
                 </CardContent>
                 <CardFooter className="flex justify-between text-sm text-gray-500">
                   <div className="flex items-center gap-4">
@@ -141,7 +221,7 @@ export default function Home() {
                       {project.forks}
                     </span>
                   </div>
-                  <div>Updated: {project.lastUpdated}</div>
+                  <div>Updated: {project.updatedAt}</div>
                 </CardFooter>
               </Card>
             ))}

@@ -54,6 +54,7 @@ export async function PATCH(req: NextRequest) {
             language: data.language,
             url: projectUrl,
             user: userId,
+            likes: data.likes,
             addedAt: new Date(),
             updatedAt: data.updatedAt,
         }

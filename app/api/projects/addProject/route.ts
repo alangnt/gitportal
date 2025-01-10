@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       language: data.language,
       url: projectUrl,
       user: _id,
+      likes: data.likes,
       addedAt: new Date(),
       updatedAt: formattedUpdatedDate,
     };

@@ -44,7 +44,8 @@ import {
   Star,
   Plus,
   ExternalLink,
-  Trash2
+  Trash2,
+    RefreshCcw
 } from "lucide-react";
 
 import {
@@ -358,6 +359,16 @@ export default function UserProfilePage() {
     }
   }
 
+  const [refreshingProjectLoading, setRefreshingProjectLoading] = useState(false);
+
+  const handleRefreshProjects = () => {
+    setRefreshingProjectLoading(true);
+    setTimeout(() => {
+      fetchCreatedProjects()
+      setRefreshingProjectLoading(false);
+    }, 1000)
+  }
+
   useEffect(() => {
     if (status === "unauthenticated") {
       redirect("/");
@@ -634,6 +645,8 @@ export default function UserProfilePage() {
                     </form>
                   </DialogContent>
                 </Dialog>
+
+                <Button onClick={handleRefreshProjects}><RefreshCcw className={refreshingProjectLoading ? 'animate-spin ease-in-out' : ''}/></Button>
               </div>
               <TabsContent value="created">
                   {projects ? (
