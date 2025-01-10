@@ -17,6 +17,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription, DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
@@ -186,53 +194,104 @@ export default function Home() {
         {projects && projects.length > 0 ? (
           <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
             {projects.map((project: any) => (
-              <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span>{project.title}</span>
-                    <div className={"flex items-center gap-1"}>
-                      {project.user !== userInfo?._id ? (
-                          <Button
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Card className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{project.title}</span>
+                        <div className={"flex items-center gap-1"}>
+                          {project.user !== userInfo?._id ? (
+                            <Button
                               variant={"ghost"}
                               onClick={() => {
                                 handleLikeProject(project._id);
                               }}
                               className={"text-red-500"}
-                          >{project.totalLikes}
-                            <Heart
-                              fill={project.likes && userInfo?._id && project.likes[userInfo._id] ? "red" : "white"}
+                            >{project.totalLikes}
+                              <Heart
+                                fill={project.likes && userInfo?._id && project.likes[userInfo._id] ? "red" : "white"}
+                              />
+                            </Button>
+                          ) : null}
+                          <Link
+                            href={project.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:text-blue-600"
+                          >
+                            <ExternalLink className="h-4 w-4"/>
+                          </Link>
+                        </div>
+                      </CardTitle>
+                      <Badge className={"w-fit"}>{project.language}</Badge>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-gray-500 truncate">{project.description}</p>
+                    </CardContent>
+                    <CardFooter className="flex justify-between text-sm text-gray-500">
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-4 w-4"/>
+                          {project.stars}
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <GitFork className="h-4 w-4"/>
+                            {project.forks}
+                        </span>
+                      </div>
+                      <div>Updated: {project.updatedAt}</div>
+                    </CardFooter>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent className={"sm:max-w-[425px]"}>
+                  <DialogHeader>
+                    <div className={"flex items-center gap-1"}>
+                      <DialogTitle className={"text-2xl"}>{project.title}</DialogTitle>
+                      {project.user !== userInfo?._id ? (
+                        <Button
+                          variant={"ghost"}
+                          onClick={() => {
+                            handleLikeProject(project._id);
+                          }}
+                          className={"text-red-500"}
+                        >{project.totalLikes}
+                          <Heart
+                            fill={project.likes && userInfo?._id && project.likes[userInfo._id] ? "red" : "white"}
                           />
-                          </Button>
+                        </Button>
                       ) : null}
-                      <Link
-                          href={project.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:text-blue-600"
-                      >
-                        <ExternalLink className="h-4 w-4"/>
-                      </Link>
                     </div>
-                  </CardTitle>
-                  <Badge className={"w-fit"}>{project.language}</Badge>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500 truncate">{project.description}</p>
-                </CardContent>
-                <CardFooter className="flex justify-between text-sm text-gray-500">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <Star className="h-4 w-4"/>
-                      {project.stars}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <GitFork className="h-4 w-4"/>
-                      {project.forks}
-                    </span>
-                  </div>
-                  <div>Updated: {project.updatedAt}</div>
-                </CardFooter>
-              </Card>
+                    <Badge className={"w-fit"}>{project.language}</Badge>
+                  </DialogHeader>
+                  <DialogDescription>{project.description}</DialogDescription>
+                  <DialogFooter>
+                    <div className="flex justify-between text-sm text-gray-500 w-full">
+                      <div className="flex items-center gap-4">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-4 w-4"/>
+                          {project.stars}
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <GitFork className="h-4 w-4"/>
+                          {project.forks}
+                        </span>
+                      </div>
+                      <div>Updated: {project.updatedAt}</div>
+                    </div>
+                  </DialogFooter>
+                  <Button>
+                    <Link
+                      href={project.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2"
+                    >Visit the project
+                      <ExternalLink className="h-4 w-4"/>
+                    </Link>
+                  </Button>
+                </DialogContent>
+              </Dialog>
             ))}
           </section>
         ) : (
