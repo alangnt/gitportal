@@ -149,6 +149,8 @@ export default function Home() {
       });
 
       const result = await response.json();
+
+      fetchProjects()
     } catch (error) {
       console.error('Request failed:', error);
     }
@@ -189,12 +191,19 @@ export default function Home() {
                   <CardTitle className="flex items-center justify-between">
                     <span>{project.title}</span>
                     <div className={"flex items-center gap-1"}>
-                      <Button
-                          variant={"ghost"}
-                          onClick={() => {
-                            handleLikeProject(project._id);
-                          }}
-                      ><Heart className={"text-red-500"} fill={"red"} /></Button>
+                      {project.user !== userInfo?._id ? (
+                          <Button
+                              variant={"ghost"}
+                              onClick={() => {
+                                handleLikeProject(project._id);
+                              }}
+                              className={"text-red-500"}
+                          >{project.totalLikes}
+                            <Heart
+                              fill={project.likes && userInfo?._id && project.likes[userInfo._id] ? "red" : "white"}
+                          />
+                          </Button>
+                      ) : null}
                       <Link
                           href={project.url}
                           target="_blank"

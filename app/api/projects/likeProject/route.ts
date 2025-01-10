@@ -34,12 +34,18 @@ export async function PATCH(req: NextRequest) {
         if (existingLike) {
             const result = await collection.updateOne(
                 { _id: objectId },
-                { $unset: { [`likes.${userId}`]: "" } },
+                {
+                    $unset: { [`likes.${userId}`]: "" },
+                    $inc: { totalLikes: -1 }
+                },
             )
         } else {
             const result = await collection.updateOne(
                 { _id: objectId },
-                { $set: { [`likes.${userId}`]: true } },
+                {
+                    $set: { [`likes.${userId}`]: true },
+                    $inc: { totalLikes: 1 }
+                },
             )
         }
 
