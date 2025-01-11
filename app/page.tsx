@@ -30,7 +30,7 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 
 // LUCIDE
-import { Star, GitFork, ExternalLink, Heart } from "lucide-react";
+import {Star, GitFork, ExternalLink, Heart, Bookmark} from "lucide-react";
 
 // HEADER
 import Header from "@/components/Header";
@@ -46,6 +46,7 @@ interface User {
   twitter: string;
   github: string;
   email: string;
+  bookmarks: string[];
   totalProjects: number;
   totalContributions: number;
   totalStars: number;
@@ -164,6 +165,29 @@ export default function Home() {
     }
   }
 
+  const handleBookmarkProject = async (_id: string) => {
+    try {
+      const data = {
+        _id: userInfo?._id,
+        projectId: _id,
+      }
+
+      const response = await fetch('/api/projects/bookmarkProject', {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+      })
+
+      const result = await response.json();
+
+      fetchUserProfile()
+    } catch (error) {
+      console.error('Request failed:', error);
+    }
+  }
+
   useEffect(() => {
     if (status === "authenticated") {
       createUserProfile();
@@ -201,10 +225,11 @@ export default function Home() {
                       <CardTitle className="flex items-center justify-between">
                         <span>{project.title}</span>
                         <div className={"flex items-center gap-1"}>
-                          {project.user !== userInfo?._id ? (
+                          {project.user === userInfo?._id ? (
                             <Button
                               variant={"ghost"}
-                              onClick={() => {
+                              onClick={(event) => {
+                                event.stopPropagation();
                                 handleLikeProject(project._id);
                               }}
                               className={"text-red-500"}
@@ -214,6 +239,17 @@ export default function Home() {
                               />
                             </Button>
                           ) : null}
+                          <Button
+                              variant={"ghost"}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleBookmarkProject(project._id)
+                              }}
+                          >
+                            <Bookmark
+                                fill={userInfo?.bookmarks && userInfo?.bookmarks[project._id] ? "black" : "white"}
+                            />
+                          </Button>
                           <Link
                             href={project.url}
                             target="_blank"
@@ -248,10 +284,11 @@ export default function Home() {
                   <DialogHeader>
                     <div className={"flex items-center gap-1"}>
                       <DialogTitle className={"text-2xl"}>{project.title}</DialogTitle>
-                      {project.user !== userInfo?._id ? (
+                      {project.user === userInfo?._id ? (
                         <Button
                           variant={"ghost"}
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
                             handleLikeProject(project._id);
                           }}
                           className={"text-red-500"}
@@ -261,6 +298,17 @@ export default function Home() {
                           />
                         </Button>
                       ) : null}
+                      <Button
+                          variant={"ghost"}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleBookmarkProject(project._id)
+                          }}
+                      >
+                        <Bookmark
+                            fill={userInfo?.bookmarks && userInfo?.bookmarks[project._id] ? "black" : "white"}
+                        />
+                      </Button>
                     </div>
                     <Badge className={"w-fit"}>{project.language}</Badge>
                   </DialogHeader>

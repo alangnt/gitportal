@@ -730,31 +730,34 @@ export default function UserProfilePage() {
                           <CardContent>
                             <p className="text-sm text-gray-500 md:truncate">{project.description}</p>
                           </CardContent>
-                          <CardFooter className="flex justify-between text-sm text-gray-500">
-                            <div className="flex items-center gap-4">
+                          <CardFooter className="flex flex-col gap-4 text-sm text-gray-500">
+                            <div className={"flex justify-between w-full"}>
+                              <div className="flex items-center gap-4">
                               <span className="flex items-center gap-1">
                                 <Star className="h-4 w-4"/>
                                 {project.stars}
                               </span>
-                              <span className="flex items-center gap-1">
+                                <span className="flex items-center gap-1">
                                 <GitFork className="h-4 w-4"/>
-                                {project.forks}
+                                  {project.forks}
                               </span>
+                              </div>
+                              <div>Updated: {project.updatedAt}</div>
                             </div>
-                            <div>Updated: {project.updatedAt}</div>
+                            <Button className={"w-full"}>Share project</Button>
                           </CardFooter>
                         </Card>
                       ))}
                     </section>
                   ) : (
-                    <div>No projects created</div>
+                      <div>No projects created</div>
                   )}
               </TabsContent>
               <TabsContent value="contributed">
                 {contributedProjects && contributedProjects.length > 0 ? (
-                  <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
-                    {contributedProjects.map((project: any) => (
-                      <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
+                    <section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+                      {contributedProjects.map((project: any) => (
+                          <Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"} key={project._id}>
                         <CardHeader>
                           <CardTitle className="flex items-center justify-between">
                             <span>{project.title}</span>
