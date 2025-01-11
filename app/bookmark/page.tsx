@@ -177,6 +177,7 @@ export default function BookmarkPage() {
 			<Header/>
 			
 			<main className={"flex flex-col gap-4 grow w-full max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-10"}>
+				<h1 className={"text-3xl"}>Bookmarked Projects</h1>
 				{projects && projects.length > 0 ? (
 					<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
 						{projects.map((project: any) => (
