@@ -46,12 +46,19 @@ export async function PATCH(req: NextRequest) {
 			
 			const data = await response.json();
 			
+			let formattedUpdatedDate = "Never updated"
+			if (data.updatedAt) {
+				const updatedDate = new Date(data.updatedAt);
+				const options: Intl.DateTimeFormatOptions = {day: 'numeric', month: 'long', year: 'numeric'};
+				formattedUpdatedDate = updatedDate.toLocaleDateString('en-US', options);
+			}
+			
 			const updateData = {
 				description: data.description,
 				stars: data.stars,
 				forks: data.forks,
 				language: data.language,
-				updatedAt: data.updatedAt,
+				updatedAt: formattedUpdatedDate,
 			}
 			
 			const result = await projectsCollection.updateOne(

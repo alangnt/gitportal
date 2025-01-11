@@ -1,8 +1,9 @@
 "use client"
 
 // REACT
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 
+// NEXT
 // AUTH
 import {useSession} from "next-auth/react";
 import {redirect} from 'next/navigation';
@@ -50,6 +51,9 @@ import {Badge} from "@/components/ui/badge";
 
 // QR Code
 import {useQRCode} from "next-qrcode";
+
+// Share project
+import {toPng} from 'html-to-image'
 
 interface User {
 	_id: string;
@@ -374,7 +378,31 @@ export default function UserProfilePage() {
 	}
 	
 	// QR Code generator
-	const {Canvas} = useQRCode();
+	const {SVG} = useQRCode();
+	
+	// SHARE PROJECT
+	const cardRef = useRef<HTMLDivElement>(null)
+	
+	const saveAsImage = async (title: string) => {
+		if (cardRef.current) {
+			const dataUrl = await toPng(cardRef.current, {quality: 0.95})
+			const link = document.createElement('a')
+			link.download = `${title.replace(/\s+/g, '-').toLowerCase()}-project-card.png`
+			link.href = dataUrl
+			link.click()
+		}
+	}
+	
+	const shareToTwitter = (title: string, url: string) => {
+		const text = `Check out this awesome project: ${title}\n${url}`
+		const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
+		window.open(twitterUrl, '_blank')
+	}
+	
+	const shareToLinkedIn = (url: string) => {
+		const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?description=${encodeURIComponent(url)}`
+		window.open(linkedInUrl, '_blank')
+	}
 	
 	useEffect(() => {
 		if (status === "unauthenticated") {
@@ -668,7 +696,8 @@ export default function UserProfilePage() {
 										{projects.map((project: any) => (
 											<Card
 												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-46"}
-												key={project._id}>
+												key={project._id}
+											>
 												<CardHeader>
 													<CardTitle className="flex items-center justify-between">
 														<span>{project.title}</span>
@@ -749,7 +778,7 @@ export default function UserProfilePage() {
 												<CardContent>
 													<p className="text-sm text-gray-500 md:truncate">{project.description}</p>
 												</CardContent>
-												<CardFooter className="flex flex-col gap-4 text-sm text-gray-500">
+												<CardFooter className="flex flex-col gap-4 text-sm text-gray-500 w-full">
 													<div className={"flex justify-between w-full"}>
 														<div className="flex items-center gap-4">
                               <span className="flex items-center gap-1">
@@ -764,23 +793,39 @@ export default function UserProfilePage() {
 														<div>Updated: {project.updatedAt}</div>
 													</div>
 													<Dialog>
-														<DialogTrigger>
+														<DialogTrigger asChild>
 															<Button className={"w-full"}>Share project</Button>
 														</DialogTrigger>
 														<DialogContent>
-															<Canvas
-																text={project.url}
-																options={{
-																	errorCorrectionLevel: 'M',
-																	margin: 3,
-																	scale: 4,
-																	width: 200,
-																	color: {
-																		dark: '#010599FF',
-																		light: '#FFBF60FF',
-																	},
-																}}
-															/>
+															<DialogTitle>You can share your project card everywhere !</DialogTitle>
+															<Card ref={cardRef}>
+																<CardHeader>
+																	<CardTitle className={"text-2xl"}>{project.title}</CardTitle>
+																	<CardDescription>{userInfo?.github}</CardDescription>
+																</CardHeader>
+																<CardContent>
+																	<SVG
+																		text={project.url}
+																		options={{
+																			margin: 2,
+																			width: 200,
+																			color: {
+																				dark: '#000000',
+																				light: '#FFFFFF',
+																			},
+																		}}
+																	/>
+																</CardContent>
+															</Card>
+															<div className="flex items-center gap-4 mt-4 w-full">
+																<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
+																	Image</Button>
+																<Button className={"w-full"} onClick={() => shareToTwitter(project.title, project.url)}>Share
+																	on
+																	Twitter</Button>
+																<Button className={"w-full"} onClick={() => shareToLinkedIn(project.url)}>Share on
+																	LinkedIn</Button>
+															</div>
 														</DialogContent>
 													</Dialog>
 												</CardFooter>
