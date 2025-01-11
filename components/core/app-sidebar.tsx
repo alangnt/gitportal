@@ -24,7 +24,7 @@ const items = [
   },
   {
     title: "Saved",
-    url: "#",
+    url: "/bookmark",
     icon: Bookmark
   },
   {

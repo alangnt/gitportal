@@ -1,34 +1,28 @@
 "use client"
 
-// REACT
-import {useEffect, useState} from "react"
-
-// NEXT
-import Link from "next/link";
-
-// AUTH
 import {useSession} from "next-auth/react";
 
-// SHADCN
-import {Card, CardContent, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import {Input} from "@/components/ui/input";
-import {Badge} from "@/components/ui/badge";
-import {Button} from "@/components/ui/button";
+import {useEffect, useState} from "react";
 
-// LUCIDE
+import Header from "@/components/Header";
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger
+} from "@/components/ui/dialog";
+import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+
 import {Bookmark, ExternalLink, GitFork, Heart, Star} from "lucide-react";
 
-// HEADER
-import Header from "@/components/Header";
+import Link from "next/link";
+import {redirect} from "next/navigation";
 
 interface User {
 	_id: string;
@@ -41,69 +35,22 @@ interface User {
 	twitter: string;
 	github: string;
 	email: string;
-	bookmarks: string[];
+	bookmarks: any;
 	totalProjects: number;
 	totalContributions: number;
 	totalStars: number;
 	totalForks: number;
 }
 
-export default function Home() {
+export default function BookmarkPage() {
 	const {data: session, status} = useSession();
 	
 	// USERS
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 	
-	// PROJECTS
-	const [projects, setProjects] = useState(undefined);
-	const [selectedProject, setSelectedProject] = useState(null);
-	
-	// SEARCHBAR
-	const [searchQuery, setSearchQuery] = useState("");
-	
-	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSearchQuery(e.target.value);
-	}
-	
-	// FETCH PROJECTS
-	const fetchProjects = async () => {
-		try {
-			const response = await fetch('/api/projects');
-			if (!response.ok) {
-				throw new Error('Failed to fetch projects');
-			}
-			const data = await response.json();
-			
-			if (searchQuery.trim() !== "") {
-				const filteredBySearch = data.data.filter((project: any) => project.title && project.title.toLowerCase().includes(searchQuery));
-				setProjects(filteredBySearch);
-			} else {
-				setProjects(data.data);
-			}
-			
-			setLoading(false);
-		} catch (err: any) {
-			setError(err.message);
-			setLoading(false);
-		}
-	};
-	
-	const createUserProfile = async () => {
-		const data = {name: session?.user?.name, email: session?.user?.email, image: session?.user?.image};
-		
-		const response = await fetch("/api/users/createUser", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(data)
-		});
-		
-		const result = await response.json();
-	}
-	
 	const [userInfo, setUserInfo] = useState<User | null>(null);
+	const [userFetched, setUserFetched] = useState(false);
 	
 	// FETCH USER INFO
 	const fetchUserProfile = async () => {
@@ -128,10 +75,37 @@ export default function Home() {
 			
 			const user = userInfos[0];
 			setUserInfo(user);
+			setUserFetched(true);
 			
 			setLoading(false);
 		} catch (err: any) {
 			console.error(err);
+			setError(err.message);
+			setLoading(false);
+		}
+	};
+	
+	const [projects, setProjects] = useState(undefined);
+	
+	// FETCH PROJECTS
+	const fetchProjects = async () => {
+		if (!userInfo) return;
+		
+		try {
+			const response = await fetch('/api/projects');
+			if (!response.ok) {
+				throw new Error('Failed to fetch projects');
+			}
+			const data = await response.json();
+			
+			const bookmarkedProjects = data.data.filter(
+				(project: any) => userInfo?.bookmarks[project._id]
+			);
+			
+			setProjects(bookmarkedProjects);
+			
+			setLoading(false);
+		} catch (err: any) {
 			setError(err.message);
 			setLoading(false);
 		}
@@ -184,13 +158,16 @@ export default function Home() {
 	}
 	
 	useEffect(() => {
-		if (status === "authenticated") {
-			createUserProfile();
-			fetchUserProfile();
+		if (status === "unauthenticated") {
+			redirect("/");
+		} else if (status === "authenticated") {
+			if (userFetched) {
+				fetchProjects();
+			} else {
+				fetchUserProfile();
+			}
 		}
-		
-		fetchProjects();
-	}, [status, searchQuery]);
+	}, [status, userFetched]);
 	
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error: {error}</div>;
@@ -199,17 +176,7 @@ export default function Home() {
 		<>
 			<Header/>
 			
-			<main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4"}>
-				<section className={"w-full"}>
-					<Input
-						type="text"
-						value={searchQuery}
-						onChange={handleSearch}
-						placeholder={"Find an open source project now..."}
-						className={"w-full shadow"}
-					/>
-				</section>
-				
+			<main className={"flex flex-col gap-4 grow w-full max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-10"}>
 				{projects && projects.length > 0 ? (
 					<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
 						{projects.map((project: any) => (
@@ -269,7 +236,7 @@ export default function Home() {
 	                        {project.stars}
                         </span>
 												<span className="flex items-center gap-1">
-                            <GitFork className="h-4 w-4"/>
+                        <GitFork className="h-4 w-4"/>
 													{project.forks}
                         </span>
 											</div>
@@ -340,7 +307,7 @@ export default function Home() {
 						))}
 					</section>
 				) : (
-					<div>No projects found</div>
+					<div>No projects bookmarked</div>
 				)}
 			</main>
 		</>
