@@ -865,7 +865,7 @@ export default function UserProfilePage() {
 																	</div>
 																</CardContent>
 															</Card>
-															<section className={"flex flex-col w-full"}>
+															<section className={"flex flex-col gap-2 w-full"}>
 																<div className={"flex flex-col gap-2"}>
 																	<h3>Edit the background color</h3>
 																	<div className={"flex gap-2 w-full mb-4"}>
