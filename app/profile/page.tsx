@@ -24,6 +24,7 @@ import {
 	Github,
 	GitPullRequest,
 	Globe,
+	Heart,
 	Mail,
 	MapPin,
 	Plus,
@@ -282,11 +283,20 @@ export default function UserProfilePage() {
 	const handleSubmitEditProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setEditProjectLoading(true);
+		setEditProjectError(null);
 		
 		const data = {
 			userId: userInfo?._id,
 			user: userInfo?.github,
 			...editProjectFormData
+		}
+		
+		if (editProjectFormData.title === selectedProject?.title) {
+			setTimeout(() => {
+				setEditProjectError("You cannot switch to current project")
+				setEditProjectLoading(false);
+			}, 1000)
+			return;
 		}
 		
 		try {
@@ -404,6 +414,22 @@ export default function UserProfilePage() {
 		window.open(linkedInUrl, '_blank')
 	}
 	
+	const [selectedBgColor, setSelectedBgColor] = useState<string | null>(null);
+	const [selectedTextColor, setSelectedTextColor] = useState<string | null>(null);
+	
+	const colorPalette = [
+		"#000000", // Black
+		"#FFFFFF", // White
+		"#FF5733", // Orange
+		"#FFC300", // Yellow
+		"#8E44AD", // Purple
+		"#C70039", // Red
+		"#34495E", // Gray
+		"#2ECC71", // Emerald
+		"#1ABC9C", // Aqua
+		"#F39C12", // Orange-Yellow
+	]
+	
 	useEffect(() => {
 		if (status === "unauthenticated") {
 			redirect("/");
@@ -472,8 +498,8 @@ export default function UserProfilePage() {
 											<Link
 												// TODO: add a callback if links are not provided
 												href={userInfo?.website || '#'}
-												target="_blank"
-												className="text-blue-500 hover:underline"
+												target={userInfo?.website ? "_blank" : ""}
+												className={userInfo?.website ? "text-blue-500 hover:underline" : ""}
 											>
 												{userInfo?.website || 'Website not provided'}
 											</Link>
@@ -482,8 +508,8 @@ export default function UserProfilePage() {
 											<Twitter className="h-4 w-4 text-gray-500"/>
 											<Link
 												href={`https://twitter.com/${userInfo?.twitter || '#'}`}
-												target={"_blank"}
-												className="text-blue-500 hover:underline"
+												target={userInfo?.twitter ? "_blank" : ""}
+												className={userInfo?.twitter ? "text-blue-500 hover:underline" : ""}
 											>
 												@{userInfo?.twitter || 'Account not provided'}
 											</Link>
@@ -492,8 +518,8 @@ export default function UserProfilePage() {
 											<Github className="h-4 w-4 text-gray-500"/>
 											<Link
 												href={`https://github.com/${userInfo?.github || '#'}`}
-												target="_blank"
-												className="text-blue-500 hover:underline"
+												target={userInfo?.github ? "_blank" : ""}
+												className={userInfo?.github ? "text-blue-500 hover:underline" : ""}
 											>
 												@{userInfo?.github || 'Account not provided'}
 											</Link>
@@ -502,7 +528,7 @@ export default function UserProfilePage() {
 											<Mail className="h-4 w-4 text-gray-500"/>
 											<Link
 												href={`mailto:${userInfo?.email || ''}`}
-												className="text-blue-500 hover:underline"
+												className={userInfo?.email ? "text-blue-500 hover:underline" : ""}
 											>
 												{userInfo?.email || 'Email not provided'}
 											</Link>
@@ -714,7 +740,8 @@ export default function UserProfilePage() {
 																	<DialogHeader>
 																		<DialogTitle>Edit Project</DialogTitle>
 																		<DialogDescription>
-																			Make changes to your project here. Click save when you&apos;re done.
+																			Switch project here. Click save when you&apos;re done. Attention, once saved, the
+																			likes count will be reset.
 																		</DialogDescription>
 																	</DialogHeader>
 																	<form onSubmit={handleSubmitEditProjectForm}>
@@ -789,43 +816,95 @@ export default function UserProfilePage() {
                                 <GitFork className="h-4 w-4"/>
 																{project.forks}
                               </span>
+															<span className="flex items-center gap-1">
+                                <Heart className="h-4 w-4"/>
+																{project.totalLikes}
+                              </span>
 														</div>
 														<div>Updated: {project.updatedAt}</div>
 													</div>
 													<Dialog>
 														<DialogTrigger asChild>
-															<Button className={"w-full"}>Share project</Button>
+															<Button
+																onClick={() => {
+																	setSelectedBgColor("#FFFFFF");
+																	setSelectedTextColor("#000000")
+																}}
+																className={"w-full"}
+															>Share project</Button>
 														</DialogTrigger>
 														<DialogContent>
 															<DialogTitle>You can share your project card everywhere !</DialogTitle>
-															<Card ref={cardRef}>
+															<Card
+																ref={cardRef}
+																style={{
+																	backgroundColor: selectedBgColor || "black",
+																	color: selectedTextColor || "white"
+																}}>
 																<CardHeader>
-																	<CardTitle className={"text-2xl"}>{project.title}</CardTitle>
-																	<CardDescription>{userInfo?.github}</CardDescription>
+																	<CardTitle className={"text-2xl"}>{project.completeTitle}</CardTitle>
+																	<CardDescription>{userInfo?.github}/{project.title}</CardDescription>
 																</CardHeader>
-																<CardContent>
-																	<SVG
-																		text={project.url}
-																		options={{
-																			margin: 2,
-																			width: 200,
-																			color: {
-																				dark: '#000000',
-																				light: '#FFFFFF',
-																			},
-																		}}
-																	/>
+																<CardContent className={"flex gap-4"}>
+																	<div className={"rounded-md overflow-hidden w-full h-full"}>
+																		<SVG
+																			text={project.url}
+																			options={{
+																				margin: 2,
+																				width: 200,
+																				color: {
+																					dark: '#000000',
+																					light: '#FFFFFF',
+																				},
+																			}}
+																		/>
+																	</div>
+																	<div className={"flex items-center justify-center w-full"}>
+																		<h2 className={"text-2xl text-center"}>Seen on<br/><span
+																			className={"font-semibold"}>GitPortal</span></h2>
+																	</div>
 																</CardContent>
 															</Card>
-															<div className="flex items-center gap-4 mt-4 w-full">
-																<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
-																	Image</Button>
-																<Button className={"w-full"} onClick={() => shareToTwitter(project.title, project.url)}>Share
-																	on
-																	Twitter</Button>
-																<Button className={"w-full"} onClick={() => shareToLinkedIn(project.url)}>Share on
-																	LinkedIn</Button>
-															</div>
+															<section className={"flex flex-col w-full"}>
+																<div className={"flex flex-col gap-2"}>
+																	<h3>Edit the background color</h3>
+																	<div className={"flex gap-2 w-full mb-4"}>
+																		{colorPalette.map((color: any) => (
+																			<Button
+																				key={color}
+																				className={"w-full shadow"}
+																				style={{
+																					backgroundColor: color
+																				}}
+																				onClick={() => setSelectedBgColor(color)}
+																			></Button>
+																		))}
+																	</div>
+																	<h3>Edit the text color</h3>
+																	<div className={"flex gap-2 w-full"}>
+																		{colorPalette.map((color: any) => (
+																			<Button
+																				key={color}
+																				className={"w-full shadow"}
+																				style={{
+																					backgroundColor: color
+																				}}
+																				onClick={() => setSelectedTextColor(color)}
+																			></Button>
+																		))}
+																	</div>
+																</div>
+																<div className="flex items-center gap-4 mt-4 w-full">
+																	<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
+																		Image</Button>
+																	<Button className={"w-full"}
+																	        onClick={() => shareToTwitter(project.title, project.url)}>Share
+																		on
+																		Twitter</Button>
+																	<Button className={"w-full"} onClick={() => shareToLinkedIn(project.url)}>Share on
+																		LinkedIn</Button>
+																</div>
+															</section>
 														</DialogContent>
 													</Dialog>
 												</CardFooter>
@@ -855,14 +934,18 @@ export default function UserProfilePage() {
 												</CardContent>
 												<CardFooter className="flex justify-between text-sm text-gray-500">
 													<div className="flex items-center gap-4">
-                              <span className="flex items-center gap-1">
-                                <Star className="h-4 w-4"/>
-	                              {project.stars}
-                              </span>
+                            <span className="flex items-center gap-1">
+                              <Star className="h-4 w-4"/>
+	                            {project.stars}
+                            </span>
 														<span className="flex items-center gap-1">
-                                <GitFork className="h-4 w-4"/>
+                              <GitFork className="h-4 w-4"/>
 															{project.forks}
-                              </span>
+                            </span>
+														<span className="flex items-center gap-1">
+                              <Heart className="h-4 w-4"/>
+															{project.totalLikes}
+                            </span>
 													</div>
 													<div>Updated: {project.lastUpdated}</div>
 												</CardFooter>
@@ -870,7 +953,7 @@ export default function UserProfilePage() {
 										))}
 									</section>
 								) : (
-									<div>No projects contributed</div>
+									<div>No projects contributed (coming soon)</div>
 								)}
 							</TabsContent>
 						</Tabs>

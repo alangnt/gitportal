@@ -53,8 +53,18 @@ export async function PATCH(req: NextRequest) {
 			formattedUpdatedDate = updatedDate.toLocaleDateString('en-US', options);
 		}
 		
+		function formatProjectTitle(projectTitle: string): string {
+			return projectTitle
+				.split("-")
+				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(" ");
+		}
+		
+		const formattedProjectTitle = formatProjectTitle(title);
+		
 		const updateData = {
 			title: title,
+			completeTitle: formattedProjectTitle,
 			description: data.description,
 			stars: data.stars,
 			forks: data.forks,
