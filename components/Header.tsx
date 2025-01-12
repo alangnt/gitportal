@@ -1,25 +1,19 @@
+import {NavigationMenu, NavigationMenuList} from "@/components/ui/navigation-menu";
 import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle
-} from "@/components/ui/navigation-menu";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
@@ -56,14 +50,6 @@ export default function Header() {
 			{/* NAVIGATION MENU */}
 			<NavigationMenu className={"max-sm:hidden"}>
 				<NavigationMenuList>
-					<NavigationMenuItem>
-						<Link href="#" legacyBehavior passHref>
-							<NavigationMenuLink className={navigationMenuTriggerStyle()}>
-								Documentation
-							</NavigationMenuLink>
-						</Link>
-					</NavigationMenuItem>
-					
 					<p>{session?.user?.id}</p>
 					
 					{status === "authenticated" && (
@@ -107,7 +93,7 @@ export default function Header() {
 							<DialogContent className="sm:max-w-md">
 								<DialogHeader>
 									<DialogTitle className={"text-2xl"}>Create an account</DialogTitle>
-									<DialogDescription>
+									<DialogDescription className={"hidden"}>
 										Enter your email below to create your account
 									</DialogDescription>
 								</DialogHeader>
@@ -128,7 +114,7 @@ export default function Header() {
 										</Button>
 									</div>
 									
-									<div className="relative w-full">
+									<div className="relative w-full hidden">
 										<div className="absolute inset-0 flex items-center">
 											<span className="w-full border-t"/>
 										</div>
@@ -139,7 +125,7 @@ export default function Header() {
 										</div>
 									</div>
 									
-									<form className="grid flex-1 gap-4">
+									<form className="grid flex-1 gap-4 hidden">
 										<div>
 											<Label htmlFor={"email"} className={"font-semibold"}>Email</Label>
 											<Input type={"email"} placeholder={"jane.doe@example.com"}></Input>

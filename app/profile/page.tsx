@@ -56,22 +56,8 @@ import {useQRCode} from "next-qrcode";
 // Share project
 import {toPng} from 'html-to-image'
 
-interface User {
-	_id: string;
-	name: string;
-	username: string;
-	image: string;
-	bio: string;
-	location: string;
-	website: string;
-	twitter: string;
-	github: string;
-	email: string;
-	totalProjects: number;
-	totalContributions: number;
-	totalStars: number;
-	totalForks: number;
-}
+// Types
+import {Project, User} from "@/types/types";
 
 export default function UserProfilePage() {
 	const {data: session, status} = useSession();
@@ -140,10 +126,10 @@ export default function UserProfilePage() {
 			const data = await response.json();
 			
 			const contributedProjects = data.data.filter(
-				(project: any) => project.contributions && project.contributions[userInfo._id] === true
+				(project: Project) => project.contributions && project.contributions.includes(userInfo._id)
 			);
 			const userProjects = data.data.filter(
-				(project: any) => project.user === userInfo._id
+				(project: Project) => project.user === userInfo._id
 			);
 			
 			const sumTotalStars = userProjects.reduce((acc: number, project: any) => acc + project.stars, 0);
@@ -172,6 +158,7 @@ export default function UserProfilePage() {
 	})
 	
 	const [editUserFormData, setEditUserFormData] = useState({
+		username: "",
 		bio: '',
 		location: '',
 		website: '',
@@ -200,11 +187,13 @@ export default function UserProfilePage() {
 		setEditUserFormData((prev) => ({...prev, [name]: value}))
 	}
 	
+	const [editUserError, setEditUserError] = useState<string | null>(null);
 	const [editUserLoading, setEditUserLoading] = useState<boolean>(false);
 	
 	const handleSubmitEditUserForm = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setEditUserLoading(true);
+		setEditUserError(null);
 		
 		const data = {
 			_id: userInfo?._id,
@@ -222,6 +211,12 @@ export default function UserProfilePage() {
 			
 			const result = await response.json();
 			
+			if (response.status === 409) {
+				setTimeout(() => {
+					setEditUserError("Username already taken");
+				}, 1000)
+			}
+			
 			if (response.ok) {
 				window.location.reload();
 			} else {
@@ -230,7 +225,9 @@ export default function UserProfilePage() {
 		} catch (error) {
 			console.error('Request failed:', error);
 		} finally {
-			setEditUserLoading(false);
+			setTimeout(() => {
+				setEditUserLoading(false);
+			}, 1000)
 		}
 	};
 	
@@ -241,6 +238,7 @@ export default function UserProfilePage() {
 	const handleSubmitAddProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setAddProjectLoading(true);
+		setAddProjectError(null);
 		
 		const data = {
 			_id: userInfo?._id,
@@ -263,17 +261,23 @@ export default function UserProfilePage() {
 				window.location.reload();
 			} else {
 				if (response.status === 409) {
-					setAddProjectError("Project already exists");
+					setTimeout(() => {
+						setAddProjectError("Project already exists");
+					}, 1000)
 				}
 				if (response.status === 400) {
-					setAddProjectError("Project doesn't exist");
+					setTimeout(() => {
+						setAddProjectError("Project doesn't exist");
+					}, 1000)
 				}
 				console.error('Error adding:', result.message);
 			}
 		} catch (error) {
 			console.error('Request failed:', error);
 		} finally {
-			setAddProjectLoading(false);
+			setTimeout(() => {
+				setAddProjectLoading(false);
+			}, 1000)
 		}
 	}
 	
@@ -324,7 +328,9 @@ export default function UserProfilePage() {
 		} catch (error) {
 			console.error('Request failed:', error);
 		} finally {
-			setEditProjectLoading(false);
+			setTimeout(() => {
+				setEditProjectLoading(false);
+			}, 1000)
 		}
 	}
 	
@@ -404,7 +410,7 @@ export default function UserProfilePage() {
 	}
 	
 	const shareToTwitter = (title: string, url: string) => {
-		const text = `Check out this awesome project: ${title}\n${url}`
+		const text = `Check out my awesome open-source project: ${title}\n${url}`
 		const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`
 		window.open(twitterUrl, '_blank')
 	}
@@ -452,6 +458,7 @@ export default function UserProfilePage() {
 		
 		if (editUserInfo) {
 			setEditUserFormData({
+				username: userInfo?.username || "",
 				bio: userInfo?.bio || "",
 				location: userInfo?.location || "",
 				website: userInfo?.website || "",
@@ -483,7 +490,7 @@ export default function UserProfilePage() {
 									</Avatar>
 									<div>
 										<CardTitle>{userInfo?.name || 'User'}</CardTitle>
-										<CardDescription>@{userInfo?.username || 'username'}</CardDescription>
+										<CardDescription>{userInfo?.username ? `@${userInfo?.username}` : 'No username'}</CardDescription>
 									</div>
 								</CardHeader>
 								<CardContent>
@@ -496,7 +503,6 @@ export default function UserProfilePage() {
 										<div className="flex items-center gap-2">
 											<Globe className="h-4 w-4 text-gray-500"/>
 											<Link
-												// TODO: add a callback if links are not provided
 												href={userInfo?.website || '#'}
 												target={userInfo?.website ? "_blank" : ""}
 												className={userInfo?.website ? "text-blue-500 hover:underline" : ""}
@@ -511,7 +517,7 @@ export default function UserProfilePage() {
 												target={userInfo?.twitter ? "_blank" : ""}
 												className={userInfo?.twitter ? "text-blue-500 hover:underline" : ""}
 											>
-												@{userInfo?.twitter || 'Account not provided'}
+												{userInfo?.twitter ? `@${userInfo?.twitter}` : 'Account not provided'}
 											</Link>
 										</div>
 										<div className="flex items-center gap-2">
@@ -521,7 +527,7 @@ export default function UserProfilePage() {
 												target={userInfo?.github ? "_blank" : ""}
 												className={userInfo?.github ? "text-blue-500 hover:underline" : ""}
 											>
-												@{userInfo?.github || 'Account not provided'}
+												{userInfo?.github ? `@${userInfo?.github}` : 'Account not provided'}
 											</Link>
 										</div>
 										<div className="flex items-center gap-2">
@@ -542,80 +548,116 @@ export default function UserProfilePage() {
 											>Edit Profile</Button>
 										</DialogTrigger>
 										<DialogContent className="sm:max-w-[425px]">
-											<DialogHeader>
-												<DialogTitle>Edit Profile</DialogTitle>
-												<DialogDescription>
-													Make changes to your profile here. Click save when you&apos;re done.
-												</DialogDescription>
-											</DialogHeader>
-											<form onSubmit={handleSubmitEditUserForm}>
-												<div className="grid gap-4 py-4">
-													<div className="grid grid-cols-4 items-center gap-4">
-														<Label htmlFor="bio" className="text-right">
-															Bio
-														</Label>
-														<Textarea
-															id="bio"
-															name="bio"
-															value={editUserFormData.bio}
-															onChange={handleUserInfoChange}
-															className="col-span-3"
-														/>
-													</div>
-													<div className="grid grid-cols-4 items-center gap-4">
-														<Label htmlFor="location" className="text-right">
-															Location
-														</Label>
-														<Input
-															id="location"
-															name="location"
-															value={editUserFormData.location}
-															onChange={handleUserInfoChange}
-															className="col-span-3"
-														/>
-													</div>
-													<div className="grid grid-cols-4 items-center gap-4">
-														<Label htmlFor="website" className="text-right">
-															Website
-														</Label>
-														<Input
-															id="website"
-															name="website"
-															value={editUserFormData.website}
-															onChange={handleUserInfoChange}
-															className="col-span-3"
-														/>
-													</div>
-													<div className="grid grid-cols-4 items-center gap-4">
-														<Label htmlFor="twitter" className="text-right">
-															Twitter
-														</Label>
-														<Input
-															id="twitter"
-															name="twitter"
-															value={editUserFormData.twitter}
-															onChange={handleUserInfoChange}
-															className="col-span-3"
-														/>
-													</div>
-													<div className="grid grid-cols-4 items-center gap-4">
-														<Label htmlFor="github" className="text-right">
-															GitHub
-														</Label>
-														<Input
-															id="github"
-															name="github"
-															value={editUserFormData.github}
-															onChange={handleUserInfoChange}
-															className="col-span-3"
-														/>
-													</div>
-												</div>
-												<DialogFooter>
-													<Button type="submit">{editUserLoading ? <span
-														className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
-												</DialogFooter>
-											</form>
+											{userInfo && userInfo?.username ? (
+												<>
+													<DialogHeader>
+														<DialogTitle>Edit Profile</DialogTitle>
+														<DialogDescription>
+															Make changes to your profile here. Click save when you&apos;re done.
+														</DialogDescription>
+													</DialogHeader>
+													<form onSubmit={handleSubmitEditUserForm}>
+														<div className="grid gap-4 py-4">
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="bio" className="text-right">
+																	Bio
+																</Label>
+																<Textarea
+																	id="bio"
+																	name="bio"
+																	value={editUserFormData.bio}
+																	onChange={handleUserInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="location" className="text-right">
+																	Location
+																</Label>
+																<Input
+																	id="location"
+																	name="location"
+																	value={editUserFormData.location}
+																	onChange={handleUserInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="website" className="text-right">
+																	Website
+																</Label>
+																<Input
+																	id="website"
+																	name="website"
+																	value={editUserFormData.website}
+																	onChange={handleUserInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="twitter" className="text-right">
+																	Twitter
+																</Label>
+																<Input
+																	id="twitter"
+																	name="twitter"
+																	value={editUserFormData.twitter}
+																	onChange={handleUserInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="github" className="text-right">
+																	GitHub
+																</Label>
+																<Input
+																	id="github"
+																	name="github"
+																	value={editUserFormData.github}
+																	onChange={handleUserInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
+														</div>
+														<DialogFooter>
+															<Button type="submit">{editUserLoading ? <span
+																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
+														</DialogFooter>
+													</form>
+												</>
+											) : (
+												<>
+													<DialogHeader>
+														<DialogTitle>Create your username</DialogTitle>
+														<DialogDescription>
+															Once your username is set, you&apos;ll be able to edit your profile.
+														</DialogDescription>
+													</DialogHeader>
+													<form onSubmit={handleSubmitEditUserForm}>
+														<div className="grid gap-4 py-4">
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="username" className="text-right">
+																	Username
+																</Label>
+																<Input
+																	id="username"
+																	name="username"
+																	value={editUserFormData.username}
+																	onChange={handleUserInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
+														</div>
+														<DialogFooter>
+															<Button type="submit">{editUserLoading ? <span
+																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
+														</DialogFooter>
+														{editUserError ? (
+															<div className={"text-sm text-center text-red-500 mt-4"}>{editUserError}</div>
+														) : null}
+													</form>
+												</>
+											)}
 										</DialogContent>
 									</Dialog>
 								</CardContent>
@@ -679,38 +721,53 @@ export default function UserProfilePage() {
 											className={"shadow"}
 										><Plus/></Button>
 									</DialogTrigger>
-									<DialogContent className="sm:max-w-[425px]">
-										<DialogHeader>
-											<DialogTitle>Add a project</DialogTitle>
-											<DialogDescription>
-												Add your project here. Click save when you&apos;re done.
-											</DialogDescription>
-										</DialogHeader>
-										<form onSubmit={handleSubmitAddProjectForm}>
-											<div className="grid gap-4 py-4">
-												<div className="grid grid-cols-4 items-center gap-4">
-													<Label htmlFor="title" className="text-right">
-														Title
-													</Label>
-													<Input
-														id="title"
-														name="title"
-														value={addProjectFormData.title}
-														onChange={handleAddProjectInfoChange}
-														className="col-span-3"
-													/>
-												</div>
-											</div>
-											<DialogFooter>
-												<Button type="submit">{addProjectLoading ? <span
-													className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
-											</DialogFooter>
-											
-											{addProjectError ? (
-												<div className={"text-sm text-center text-red-500 mt-4"}>{addProjectError}</div>
-											) : null}
-										</form>
-									</DialogContent>
+									{userInfo && userInfo?.github ? (
+										<>
+											<DialogContent className="sm:max-w-[425px]">
+												<DialogHeader>
+													<DialogTitle>Add a project</DialogTitle>
+													<DialogDescription>
+														Add your project here. Click save when you&apos;re done.
+													</DialogDescription>
+												</DialogHeader>
+												<form onSubmit={handleSubmitAddProjectForm}>
+													<div className="grid gap-4 py-4">
+														<div className="grid grid-cols-4 items-center gap-4">
+															<Label htmlFor="title" className="text-right">
+																Title
+															</Label>
+															<Input
+																id="title"
+																name="title"
+																value={addProjectFormData.title}
+																onChange={handleAddProjectInfoChange}
+																className="col-span-3"
+															/>
+														</div>
+													</div>
+													<DialogFooter>
+														<Button type="submit">{addProjectLoading ? <span
+															className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
+													</DialogFooter>
+													
+													{addProjectError ? (
+														<div className={"text-sm text-center text-red-500 mt-4"}>{addProjectError}</div>
+													) : null}
+												</form>
+											</DialogContent>
+										</>
+									) : (
+										<>
+											<DialogContent className="sm:max-w-[425px]">
+												<DialogHeader>
+													<DialogTitle>Add your GitHub username</DialogTitle>
+													<DialogDescription>
+														You first need to add your GitHub username to your profile.
+													</DialogDescription>
+												</DialogHeader>
+											</DialogContent>
+										</>
+									)}
 								</Dialog>
 								
 								<Button onClick={handleRefreshProjects}><RefreshCcw
@@ -719,7 +776,7 @@ export default function UserProfilePage() {
 							<TabsContent value="created">
 								{projects ? (
 									<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
-										{projects.map((project: any) => (
+										{projects.map((project: Project) => (
 											<Card
 												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-46"}
 												key={project._id}
@@ -869,7 +926,7 @@ export default function UserProfilePage() {
 																<div className={"flex flex-col gap-2"}>
 																	<h3>Edit the background color</h3>
 																	<div className={"flex gap-2 w-full mb-4"}>
-																		{colorPalette.map((color: any) => (
+																		{colorPalette.map((color: string) => (
 																			<Button
 																				key={color}
 																				className={"w-full shadow"}
@@ -882,7 +939,7 @@ export default function UserProfilePage() {
 																	</div>
 																	<h3>Edit the text color</h3>
 																	<div className={"flex gap-2 w-full"}>
-																		{colorPalette.map((color: any) => (
+																		{colorPalette.map((color: string) => (
 																			<Button
 																				key={color}
 																				className={"w-full shadow"}
@@ -918,7 +975,7 @@ export default function UserProfilePage() {
 							<TabsContent value="contributed">
 								{contributedProjects && contributedProjects.length > 0 ? (
 									<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
-										{contributedProjects.map((project: any) => (
+										{contributedProjects.map((project: Project) => (
 											<Card
 												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}
 												key={project._id}>
@@ -947,7 +1004,7 @@ export default function UserProfilePage() {
 															{project.totalLikes}
                             </span>
 													</div>
-													<div>Updated: {project.lastUpdated}</div>
+													<div>Updated: {project.updatedAt}</div>
 												</CardFooter>
 											</Card>
 										))}

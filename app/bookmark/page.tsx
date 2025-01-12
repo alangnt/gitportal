@@ -7,13 +7,13 @@ import {useEffect, useState} from "react";
 import Header from "@/components/Header";
 
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger
 } from "@/components/ui/dialog";
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
@@ -24,23 +24,8 @@ import {Bookmark, ExternalLink, GitFork, Heart, Star} from "lucide-react";
 import Link from "next/link";
 import {redirect} from "next/navigation";
 
-interface User {
-	_id: string;
-	name: string;
-	username: string;
-	image: string;
-	bio: string;
-	location: string;
-	website: string;
-	twitter: string;
-	github: string;
-	email: string;
-	bookmarks: any;
-	totalProjects: number;
-	totalContributions: number;
-	totalStars: number;
-	totalForks: number;
-}
+// Types
+import {Project, User} from "@/types/types"
 
 export default function BookmarkPage() {
 	const {data: session, status} = useSession();
@@ -66,7 +51,7 @@ export default function BookmarkPage() {
 			
 			const data = await response.json();
 			const userInfos = data.data.filter(
-				(user: any) => user.email === session?.user?.email
+				(user: User) => user.email === session?.user?.email
 			);
 			
 			if (userInfos.length === 0) {
@@ -99,7 +84,7 @@ export default function BookmarkPage() {
 			const data = await response.json();
 			
 			const bookmarkedProjects = data.data.filter(
-				(project: any) => userInfo?.bookmarks[project._id]
+				(project: Project) => userInfo?.bookmarks.includes(project._id)
 			);
 			
 			setProjects(bookmarkedProjects);
@@ -128,6 +113,10 @@ export default function BookmarkPage() {
 			
 			const result = await response.json();
 			
+			if (!result) {
+				console.error('Failed to like project');
+			}
+			
 			fetchProjects()
 		} catch (error) {
 			console.error('Request failed:', error);
@@ -150,6 +139,10 @@ export default function BookmarkPage() {
 			})
 			
 			const result = await response.json();
+			
+			if (!result) {
+				console.error('Failed to bookmark project');
+			}
 			
 			fetchUserProfile()
 		} catch (error) {
@@ -180,8 +173,8 @@ export default function BookmarkPage() {
 				<h1 className={"text-3xl"}>Bookmarked Projects</h1>
 				{projects && projects.length > 0 ? (
 					<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
-						{projects.map((project: any) => (
-							<Dialog>
+						{projects.map((project: Project) => (
+							<Dialog key={project._id}>
 								<DialogTrigger asChild>
 									<Card
 										className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}
@@ -200,7 +193,7 @@ export default function BookmarkPage() {
 															className={"text-red-500"}
 														>{project.totalLikes}
 															<Heart
-																fill={project.likes && userInfo?._id && project.likes[userInfo._id] ? "red" : "white"}
+																fill={project.likes && userInfo?._id && project.likes.includes(userInfo._id) ? "red" : "white"}
 															/>
 														</Button>
 													) : null}
@@ -212,7 +205,7 @@ export default function BookmarkPage() {
 														}}
 													>
 														<Bookmark
-															fill={userInfo?.bookmarks && userInfo?.bookmarks[project._id] ? "black" : "white"}
+															fill={userInfo?.bookmarks && userInfo?.bookmarks.includes(project._id) ? "black" : "white"}
 														/>
 													</Button>
 													<Link
@@ -259,7 +252,7 @@ export default function BookmarkPage() {
 													className={"text-red-500"}
 												>{project.totalLikes}
 													<Heart
-														fill={project.likes && userInfo?._id && project.likes[userInfo._id] ? "red" : "white"}
+														fill={project.likes && userInfo?._id && project.likes.includes(userInfo._id) ? "red" : "white"}
 													/>
 												</Button>
 											) : null}
@@ -271,7 +264,7 @@ export default function BookmarkPage() {
 												}}
 											>
 												<Bookmark
-													fill={userInfo?.bookmarks && userInfo?.bookmarks[project._id] ? "black" : "white"}
+													fill={userInfo?.bookmarks && userInfo?.bookmarks.includes(project._id) ? "black" : "white"}
 												/>
 											</Button>
 										</div>
