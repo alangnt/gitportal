@@ -3,14 +3,14 @@
 import {Bookmark, Home, Settings} from "lucide-react"
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
+	Sidebar,
+	SidebarContent,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
 import {useSession} from "next-auth/react";
@@ -29,7 +29,7 @@ const items = [
 	},
 	{
 		title: "Settings",
-		url: "#",
+		url: "/settings",
 		icon: Settings,
 	},
 ]
