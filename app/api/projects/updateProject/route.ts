@@ -16,7 +16,7 @@ export async function PATCH(req: NextRequest) {
 			objectId = new ObjectId(user);
 		} catch (error) {
 			return NextResponse.json(
-				{message: "Invalid 'user' format. Must be a valid ObjectId."},
+				{message: "Invalid 'user' format. Must be a valid ObjectId." + error},
 				{status: 400}
 			);
 		}

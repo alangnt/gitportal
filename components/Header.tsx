@@ -28,13 +28,20 @@ import Link from "next/link";
 import {SidebarTrigger} from "@/components/ui/sidebar";
 
 import {User2} from "lucide-react"
+import {useState} from "react";
 
 export default function Header() {
 	const {data: session, status} = useSession();
 	
+	const [signInError, setSignInError] = useState<string | null>(null);
+	
 	const handleGitHubSignIn = async () => {
 		try {
 			const response = await signIn("github", {redirect: false});
+			
+			if (response?.status !== 200) {
+				setSignInError("Failed to login");
+			}
 		} catch (error) {
 			console.error("Error during sign-in:", error);
 		}
@@ -58,7 +65,7 @@ export default function Header() {
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Avatar>
-									<AvatarImage src={session?.user?.image!} className={"cursor-pointer"}/>
+									<AvatarImage src={session?.user?.image || ''} className={"cursor-pointer"}/>
 									<AvatarFallback>
 										<User2/>
 									</AvatarFallback>
@@ -109,6 +116,10 @@ export default function Header() {
 											<GitHubIcon/>
 											<span>Sign In</span>
 										</Button>
+										
+										{signInError ? (
+											<div className={"text-sm text-center text-red-500 mt-4"}>{signInError}</div>
+										) : null}
 										
 										<Button variant={"outline"} className={"font-semibold w-full hidden"}>
 											{/*<Github/>*/}

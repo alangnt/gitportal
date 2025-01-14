@@ -71,7 +71,6 @@ export default function UserProfilePage() {
 	
 	// const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState<string | null>(null);
 	
 	// FETCH USER INFO
 	const fetchUserProfile = async () => {
@@ -87,7 +86,7 @@ export default function UserProfilePage() {
 			
 			const data = await response.json();
 			const userInfos = data.data.filter(
-				(user: any) => user.email === session?.user?.email
+				(user: User) => user.email === session?.user?.email
 			);
 			
 			if (userInfos.length === 0) {
@@ -99,9 +98,8 @@ export default function UserProfilePage() {
 			setUserFetched(true);
 			
 			setLoading(false);
-		} catch (err: any) {
-			console.error(err);
-			setError(err.message);
+		} catch (error) {
+			console.error(error);
 			setLoading(false);
 		}
 	};
@@ -132,18 +130,18 @@ export default function UserProfilePage() {
 				(project: Project) => project.user === userInfo._id
 			);
 			
-			const sumTotalStars = userProjects.reduce((acc: number, project: any) => acc + project.stars, 0);
+			const sumTotalStars = userProjects.reduce((acc: number, project: Project) => acc + project.stars, 0);
 			setTotalStars(sumTotalStars);
 			
-			const sumTotalForks = userProjects.reduce((acc: number, project: any) => acc + project.forks, 0);
+			const sumTotalForks = userProjects.reduce((acc: number, project: Project) => acc + project.forks, 0);
 			setTotalForks(sumTotalForks);
 			
 			setProjects(userProjects);
 			setContributedProjects(contributedProjects);
 			
 			setLoading(false);
-		} catch (err: any) {
-			setError(err.message);
+		} catch (error) {
+			console.error(error);
 			setLoading(false);
 		}
 	};
@@ -387,8 +385,8 @@ export default function UserProfilePage() {
 			} else {
 				window.location.reload();
 			}
-		} catch (err: any) {
-			setError(err.message);
+		} catch (error) {
+			console.error('Request failed:', error);
 			setLoading(false);
 		}
 	}
@@ -469,7 +467,6 @@ export default function UserProfilePage() {
 	}, [selectedProject, editUserInfo]);
 	
 	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error}</div>;
 	
 	return (
 		<>

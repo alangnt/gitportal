@@ -38,7 +38,6 @@ export default function Home() {
 	
 	// USERS
 	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState<string | null>(null);
 	
 	// PROJECTS
 	const [projects, setProjects] = useState(undefined);
@@ -67,8 +66,8 @@ export default function Home() {
 			}
 			
 			setLoading(false);
-		} catch (err: any) {
-			setError(err.message);
+		} catch (error) {
+			console.error(error);
 			setLoading(false);
 		}
 	};
@@ -118,9 +117,8 @@ export default function Home() {
 			setUserInfo(user);
 			
 			setLoading(false);
-		} catch (err: any) {
-			console.error(err);
-			setError(err.message);
+		} catch (error) {
+			console.error(error);
 			setLoading(false);
 		}
 	};
@@ -189,7 +187,6 @@ export default function Home() {
 	}, [status, searchQuery]);
 	
 	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error}</div>;
 	
 	return (
 		<>

@@ -32,7 +32,6 @@ export default function BookmarkPage() {
 	
 	// USERS
 	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState<string | null>(null);
 	
 	const [userInfo, setUserInfo] = useState<User | null>(null);
 	const [userFetched, setUserFetched] = useState(false);
@@ -63,9 +62,8 @@ export default function BookmarkPage() {
 			setUserFetched(true);
 			
 			setLoading(false);
-		} catch (err: any) {
-			console.error(err);
-			setError(err.message);
+		} catch (error) {
+			console.error(error);
 			setLoading(false);
 		}
 	};
@@ -90,8 +88,8 @@ export default function BookmarkPage() {
 			setProjects(bookmarkedProjects);
 			
 			setLoading(false);
-		} catch (err: any) {
-			setError(err.message);
+		} catch (error) {
+			console.error(error);
 			setLoading(false);
 		}
 	};
@@ -163,7 +161,6 @@ export default function BookmarkPage() {
 	}, [status, userFetched]);
 	
 	if (loading) return <div>Loading...</div>;
-	if (error) return <div>Error: {error}</div>;
 	
 	return (
 		<>

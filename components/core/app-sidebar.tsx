@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import {useSession} from "next-auth/react";
+import Link from "next/link";
 
 // Menu items.
 const items = [
@@ -43,16 +44,19 @@ export function AppSidebar() {
 				<Sidebar collapsible={"icon"}>
 					<SidebarContent>
 						<SidebarGroup>
+							<SidebarGroupLabel>Hi, {session?.user?.name} !</SidebarGroupLabel>
+						</SidebarGroup>
+						<SidebarGroup>
 							<SidebarGroupLabel>Application</SidebarGroupLabel>
 							<SidebarGroupContent>
 								<SidebarMenu>
 									{items.map((item) => (
 										<SidebarMenuItem key={item.title}>
 											<SidebarMenuButton asChild>
-												<a href={item.url}>
+												<Link href={item.url}>
 													<item.icon/>
 													<span>{item.title}</span>
-												</a>
+												</Link>
 											</SidebarMenuButton>
 										</SidebarMenuItem>
 									))}

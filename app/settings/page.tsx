@@ -1,7 +1,7 @@
 "use client"
 
 import Header from "@/components/Header";
-import {useSession} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 import {useEffect, useState} from "react";
 import {User} from "@/types/types";
 import {redirect} from "next/navigation";
@@ -76,18 +76,93 @@ export default function SettingsPage() {
 		setFormData((prev) => ({...prev, [name]: value}))
 	}
 	
-	const handleSubmit = (e: React.FormEvent) => {
+	const [sendMessageLoading, setSendMessageLoading] = useState<boolean>(false);
+	const [sendMessageError, setSendMessageError] = useState<string | null>(null);
+	
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-		// In a real application, you would send this data to your backend
-		console.log("Form submitted:", formData)
-		// Reset form after submission
-		setFormData({name: "", email: "", subject: "", message: ""})
+		setSendMessageLoading(true)
+		
+		const data = {
+			_id: userInfo?._id,
+			name: formData.name,
+			email: formData.email,
+			subject: formData.subject,
+			message: formData.message,
+		}
+		
+		try {
+			const response = await fetch('/api/inquiries/addInquiry', {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(data)
+			})
+			
+			const result = await response.json();
+			
+			if (!response.ok) {
+				console.error("Failed to add inquiry", result.message);
+				setSendMessageError("Failed to add inquiry");
+			}
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setSendMessageLoading(false);
+			setFormData({name: "", email: "", subject: "", message: ""})
+		}
 	}
 	
-	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
+	const [deleteFormData, setDeleteFormData] = useState({delete: ''});
 	
-	const handleDeleteAccount = async () => {
-		console.log("handleDelete");
+	const [canDelete, setCanDelete] = useState(false);
+	
+	const handleDeleteInputChange = (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
+		const {name, value} = e.target
+		setDeleteFormData((prev) => ({...prev, [name]: value}))
+		if (value === "DELETE") {
+			setCanDelete(true);
+		} else {
+			setCanDelete(false);
+		}
+	}
+	
+	const [deleteUserLoading, setDeleteUserLoading] = useState(false);
+	
+	const handleDeleteAccount = async (e: React.FormEvent) => {
+		e.preventDefault()
+		setDeleteUserLoading(true);
+		
+		const data = {
+			_id: userInfo?._id
+		}
+		
+		try {
+			const response = await fetch('/api/users/deleteUser', {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify(data)
+			});
+			
+			const result = await response.json();
+			
+			if (response.ok) {
+				await signOut();
+				redirect("/");
+			} else {
+				console.error("Failed to delete user", result.message);
+			}
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setDeleteUserLoading(false);
+		}
 	}
 	
 	useEffect(() => {
@@ -188,8 +263,12 @@ export default function SettingsPage() {
 													</div>
 												</div>
 											</form>
-											<DialogFooter>
-												<Button type="submit">Send Message</Button>
+											<DialogFooter className={"flex flex-col gap-2"}>
+												<Button type="submit">{sendMessageLoading ? <span
+													className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Send Message"}</Button>
+												{sendMessageError ? (
+													<div className={"text-sm text-center text-red-500 mt-4"}>{sendMessageError}</div>
+												) : null}
 											</DialogFooter>
 										</DialogContent>
 									</Dialog>
@@ -228,11 +307,20 @@ export default function SettingsPage() {
 											<p className="text-sm text-gray-500">
 												To confirm, please type &quot;DELETE&quot; in the input field below:
 											</p>
-											<Input id="delete-confirmation" placeholder="Type DELETE here"/>
+											<Input
+												id={"delete"}
+												name={"delete"}
+												value={deleteFormData.delete}
+												onChange={handleDeleteInputChange}
+												placeholder="Type DELETE here"
+											/>
 										</div>
-										<DialogFooter>
+										<DialogFooter className={"flex flex-col gap-2"}>
 											<Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-											<Button variant="destructive" onClick={handleDeleteAccount}>Delete Account</Button>
+											<Button variant="destructive" disabled={!canDelete} onClick={handleDeleteAccount}>
+												{deleteUserLoading ? <span
+													className={"animate-spin rounded-full w-4 h-4 border-t-red-800 border-2"}></span> : "Delete account"}
+											</Button>
 										</DialogFooter>
 									</DialogContent>
 								</Dialog>

@@ -22,7 +22,7 @@ export async function PATCH(req: NextRequest) {
 			objectId = new ObjectId(_id);
 		} catch (error) {
 			return NextResponse.json(
-				{message: "Invalid '_id' format. Must be a valid ObjectId."},
+				{message: "Invalid '_id' format. Must be a valid ObjectId." + error},
 				{status: 400}
 			);
 		}
@@ -44,6 +44,7 @@ export async function PATCH(req: NextRequest) {
 		} else {
 			updateData = Object.fromEntries(
 				Object.entries({username, bio, location, website, twitter, github}).filter(
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					([_, value]) => value !== undefined
 				)
 			);
