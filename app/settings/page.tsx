@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/dialog";
 import {Trash2} from "lucide-react";
 import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Textarea} from "@/components/ui/textarea";
 
 export default function SettingsPage() {
 	const {data: session, status} = useSession();
@@ -60,6 +62,28 @@ export default function SettingsPage() {
 		}
 	};
 	
+	const [formData, setFormData] = useState({
+		name: "",
+		email: "",
+		subject: "",
+		message: "",
+	})
+	
+	const handleInputChange = (
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+	) => {
+		const {name, value} = e.target
+		setFormData((prev) => ({...prev, [name]: value}))
+	}
+	
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault()
+		// In a real application, you would send this data to your backend
+		console.log("Form submitted:", formData)
+		// Reset form after submission
+		setFormData({name: "", email: "", subject: "", message: ""})
+	}
+	
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	
 	const handleDeleteAccount = async () => {
@@ -93,21 +117,82 @@ export default function SettingsPage() {
 							<CardContent className="flex flex-col gap-4">
 								<div className="flex justify-between items-center">
 									<span>Privacy Center</span>
-									<Link href="/privacy-center">
+									<Link href="/settings/privacy-center">
 										<Button variant="outline">View</Button>
 									</Link>
 								</div>
 								<div className="flex justify-between items-center">
 									<span>Privacy Policy</span>
-									<Link href="/privacy-policy">
+									<Link href="/settings/privacy-policy">
 										<Button variant="outline">View</Button>
 									</Link>
 								</div>
 								<div className="flex justify-between items-center">
 									<span>Contact Us</span>
-									<Link href="/contact">
-										<Button variant="outline">Contact</Button>
-									</Link>
+									<Dialog>
+										<DialogTrigger asChild>
+											<Button variant="outline">Contact</Button>
+										</DialogTrigger>
+										<DialogContent>
+											<DialogHeader>
+												<DialogTitle className={"text-2xl"}>Contact Us</DialogTitle>
+												<DialogDescription>
+													We&apos;d love to hear from you. Please fill out this form and we&apos;ll get back to you as
+													soon
+													as
+													possible.
+												</DialogDescription>
+											</DialogHeader>
+											<form onSubmit={handleSubmit}>
+												<div className="grid gap-4 mt-4">
+													<div className="grid gap-2">
+														<Label htmlFor="name">Name</Label>
+														<Input
+															id="name"
+															name="name"
+															value={formData.name}
+															onChange={handleInputChange}
+															required
+														/>
+													</div>
+													<div className="grid gap-2">
+														<Label htmlFor="email">Email</Label>
+														<Input
+															id="email"
+															name="email"
+															type="email"
+															value={formData.email}
+															onChange={handleInputChange}
+															required
+														/>
+													</div>
+													<div className="grid gap-2">
+														<Label htmlFor={"subject"}>Subject</Label>
+														<Input
+															id="subject"
+															name="subject"
+															value={formData.subject}
+															onChange={handleInputChange}
+															required
+														/>
+													</div>
+													<div className="grid gap-2">
+														<Label htmlFor="message">Message</Label>
+														<Textarea
+															id="message"
+															name="message"
+															value={formData.message}
+															onChange={handleInputChange}
+															required
+														/>
+													</div>
+												</div>
+											</form>
+											<DialogFooter>
+												<Button type="submit">Send Message</Button>
+											</DialogFooter>
+										</DialogContent>
+									</Dialog>
 								</div>
 							</CardContent>
 						</Card>
