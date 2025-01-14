@@ -7,6 +7,7 @@ export async function DELETE(req: NextRequest) {
 		const client = await clientPromise;
 		const db = client.db("opensourcefinder");
 		
+		const projectCollection = db.collection("projects");
 		const collection = db.collection("users");
 		
 		const {_id}: { _id: string } = await req.json();
@@ -22,6 +23,15 @@ export async function DELETE(req: NextRequest) {
 		}
 		
 		const result = await collection.deleteOne({_id: objectId});
+		
+		const deleteProject = await projectCollection.deleteMany({user: _id})
+		
+		if (!deleteProject) {
+			return NextResponse.json(
+				{message: "Failed to delete projects."},
+				{status: 500}
+			)
+		}
 		
 		if (result.deletedCount === 1) {
 			return NextResponse.json(

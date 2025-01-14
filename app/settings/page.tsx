@@ -78,6 +78,7 @@ export default function SettingsPage() {
 	
 	const [sendMessageLoading, setSendMessageLoading] = useState<boolean>(false);
 	const [sendMessageError, setSendMessageError] = useState<string | null>(null);
+	const [sendMessageSuccess, setSendMessageSuccess] = useState<string | null>(null);
 	
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
@@ -105,11 +106,15 @@ export default function SettingsPage() {
 			if (!response.ok) {
 				console.error("Failed to add inquiry", result.message);
 				setSendMessageError("Failed to add inquiry");
+				setTimeout(() => setSendMessageError(null), 5000);
+			} else {
+				setSendMessageSuccess("Inquiry sent. We'll get back to you soon");
+				setTimeout(() => setSendMessageSuccess(null), 5000);
 			}
 		} catch (error) {
 			console.error(error);
 		} finally {
-			setSendMessageLoading(false);
+			setTimeout(() => setSendMessageLoading(false), 1000);
 			setFormData({name: "", email: "", subject: "", message: ""})
 		}
 	}
@@ -262,14 +267,19 @@ export default function SettingsPage() {
 														/>
 													</div>
 												</div>
+												<DialogFooter className={"mt-4"}>
+													<div className={"flex items-center gap-2"}>
+														{sendMessageError ? (
+															<div className={"text-sm text-center text-red-500"}>{sendMessageError}</div>
+														) : null}
+														{sendMessageSuccess ? (
+															<div className={"text-sm text-center text-green-500"}>{sendMessageSuccess}</div>
+														) : null}
+														<Button type="submit">{sendMessageLoading ? <span
+															className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Send Message"}</Button>
+													</div>
+												</DialogFooter>
 											</form>
-											<DialogFooter className={"flex flex-col gap-2"}>
-												<Button type="submit">{sendMessageLoading ? <span
-													className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Send Message"}</Button>
-												{sendMessageError ? (
-													<div className={"text-sm text-center text-red-500 mt-4"}>{sendMessageError}</div>
-												) : null}
-											</DialogFooter>
 										</DialogContent>
 									</Dialog>
 								</div>

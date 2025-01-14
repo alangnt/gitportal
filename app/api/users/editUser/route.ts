@@ -29,7 +29,7 @@ export async function PATCH(req: NextRequest) {
 		
 		let updateData = null
 		
-		if (username) {
+		if (!username) {
 			const existingUsername = await collection.findOne({username})
 			if (existingUsername) {
 				return NextResponse.json(

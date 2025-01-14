@@ -215,7 +215,7 @@ export default function Home() {
 											<CardTitle className="flex items-center justify-between">
 												<span>{project.title}</span>
 												<div className={"flex items-center gap-1"}>
-													{status === "authenticated" && project.user === userInfo?._id ? (
+													{status === "authenticated" && project.user !== userInfo?._id ? (
 														<Button
 															variant={"ghost"}
 															onClick={(event) => {
@@ -225,7 +225,7 @@ export default function Home() {
 															className={"text-red-500"}
 														>{project.totalLikes}
 															<Heart
-																fill={project.likes && userInfo?._id && project.likes.includes(userInfo._id) ? "red" : "white"}
+																fill={project.likes && userInfo?._id && project.likes.includes(userInfo?._id) ? "red" : "white"}
 															/>
 														</Button>
 													) : null}
@@ -279,7 +279,7 @@ export default function Home() {
 									<DialogHeader>
 										<div className={"flex items-center gap-1"}>
 											<DialogTitle className={"text-2xl"}>{project.title}</DialogTitle>
-											{project.user === userInfo?._id ? (
+											{project.user !== userInfo?._id ? (
 												<Button
 													variant={"ghost"}
 													onClick={(event) => {
