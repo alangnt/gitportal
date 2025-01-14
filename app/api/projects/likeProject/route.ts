@@ -1,12 +1,17 @@
 import {NextRequest, NextResponse} from "next/server";
 import clientPromise from "@/lib/mongodb";
-import {ObjectId} from "mongodb";
+import {Collection, ObjectId} from "mongodb";
+
+type Document = {
+	_id: ObjectId;
+	likes: string[];
+}
 
 export async function PATCH(req: NextRequest) {
 	try {
 		const client = await clientPromise;
 		const db = client.db("opensourcefinder");
-		const collection = db.collection("projects");
+		const collection: Collection<Document> = db.collection("projects");
 		
 		const {_id, userId}: { _id: string, userId: string } = await req.json();
 		if (!_id || !userId) {

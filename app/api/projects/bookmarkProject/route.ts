@@ -1,12 +1,17 @@
 import {NextRequest, NextResponse} from "next/server";
 import clientPromise from "@/lib/mongodb";
-import {ObjectId} from "mongodb";
+import {Collection, ObjectId} from "mongodb";
+
+type Document = {
+	_id: ObjectId;
+	bookmarks: string[]; // Explicitly define bookmarks as an array of strings
+};
 
 export async function PATCH(req: NextRequest) {
 	try {
 		const client = await clientPromise;
 		const db = client.db("opensourcefinder");
-		const collection = db.collection("users");
+		const collection: Collection<Document> = db.collection("users");
 		
 		const {_id, projectId}: { _id: string, projectId: string } = await req.json();
 		if (!_id || !projectId) {
