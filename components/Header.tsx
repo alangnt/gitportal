@@ -22,28 +22,34 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 
 import {signIn, signOut, useSession} from "next-auth/react";
+import {useState} from "react";
+import {useRouter} from "next/navigation";
 
 import Link from "next/link";
 
 import {SidebarTrigger} from "@/components/ui/sidebar";
 
 import {User2} from "lucide-react"
-import {useState} from "react";
 
 export default function Header() {
 	const {data: session, status} = useSession();
 	
 	const [signInError, setSignInError] = useState<string | null>(null);
 	
+	const router = useRouter();
+	
 	const handleGitHubSignIn = async () => {
 		try {
-			const response = await signIn("github");
-			
-			if (response) {
-				setSignInError("Failed to login");
+			const result = await signIn("github", {redirect: false});
+			if (result?.error) {
+				setSignInError(result.error);
+			} else {
+				setSignInError(null);
+				router.push("/profile");
 			}
 		} catch (error) {
 			console.error("Error during sign-in:", error);
+			setSignInError("An unexpected error occurred. Please try again.");
 		}
 	};
 	
