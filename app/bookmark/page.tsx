@@ -182,7 +182,7 @@ export default function BookmarkPage() {
 													<CardTitle className="flex items-center justify-between">
 														<span>{project.title}</span>
 														<div className={"flex items-center gap-1"}>
-															{project.user === userInfo?._id ? (
+															{project.user !== userInfo?._id ? (
 																<Button
 																	variant={"ghost"}
 																	onClick={(event) => {
@@ -241,7 +241,7 @@ export default function BookmarkPage() {
 											<DialogHeader>
 												<div className={"flex items-center gap-1"}>
 													<DialogTitle className={"text-2xl"}>{project.title}</DialogTitle>
-													{project.user === userInfo?._id ? (
+													{project.user !== userInfo?._id ? (
 														<Button
 															variant={"ghost"}
 															onClick={(event) => {
