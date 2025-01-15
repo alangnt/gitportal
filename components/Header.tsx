@@ -45,7 +45,7 @@ export default function Header() {
 			}
 		} catch (error) {
 			console.error("Error during sign-in:", error);
-			setSignInError("An unexpected error occurred. Please try again.");
+			setSignInError("Unexpected error. Please try again.");
 		}
 	};
 	
