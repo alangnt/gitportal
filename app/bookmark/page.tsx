@@ -68,7 +68,7 @@ export default function BookmarkPage() {
 		}
 	};
 	
-	const [projects, setProjects] = useState(undefined);
+	const [projects, setProjects] = useState([]);
 	
 	// FETCH PROJECTS
 	const fetchProjects = async () => {

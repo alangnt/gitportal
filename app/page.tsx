@@ -40,7 +40,7 @@ export default function Home() {
 	const [loading, setLoading] = useState<boolean>(true);
 	
 	// PROJECTS
-	const [projects, setProjects] = useState(undefined);
+	const [projects, setProjects] = useState([]);
 	
 	// SEARCHBAR
 	const [searchQuery, setSearchQuery] = useState("");

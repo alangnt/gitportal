@@ -105,9 +105,9 @@ export default function UserProfilePage() {
 	};
 	
 	// PROJECTS
-	const [projects, setProjects] = useState(undefined);
-	const [contributedProjects, setContributedProjects] = useState(undefined);
-	const [selectedProject, setSelectedProject] = useState(null);
+	const [projects, setProjects] = useState([]);
+	const [contributedProjects, setContributedProjects] = useState([]);
+	const [selectedProject, setSelectedProject] = useState<Project>();
 	
 	const [totalStars, setTotalStars] = useState(0);
 	const [totalForks, setTotalForks] = useState(0);
