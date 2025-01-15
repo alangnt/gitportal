@@ -23,7 +23,6 @@ import {Input} from "@/components/ui/input";
 
 import {signIn, signOut, useSession} from "next-auth/react";
 import {useState} from "react";
-import {useRouter} from "next/navigation";
 
 import Link from "next/link";
 
@@ -36,8 +35,6 @@ export default function Header() {
 	
 	const [signInError, setSignInError] = useState<string | null>(null);
 	
-	const router = useRouter();
-	
 	const handleGitHubSignIn = async () => {
 		try {
 			const result = await signIn("github", {redirect: false});
@@ -45,7 +42,6 @@ export default function Header() {
 				setSignInError(result.error);
 			} else {
 				setSignInError(null);
-				router.push("/profile");
 			}
 		} catch (error) {
 			console.error("Error during sign-in:", error);
