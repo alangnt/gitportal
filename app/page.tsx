@@ -183,7 +183,11 @@ export default function Home() {
 			fetchUserProfile();
 		}
 		
-		fetchProjects();
+		const timeout = setTimeout(() => {
+			fetchProjects();
+		}, 300); // Add debounce to reduce excessive fetch calls
+		
+		return () => clearTimeout(timeout);
 	}, [status, searchQuery]);
 	
 	if (loading) return <div>Loading...</div>;
