@@ -705,73 +705,77 @@ export default function UserProfilePage() {
 						</div>
 						
 						<Tabs defaultValue="created" className="w-full">
-							<div className="flex items-center gap-2">
-								<TabsList className={"shadow"}>
-									<TabsTrigger value="created">Created Projects</TabsTrigger>
-									<TabsTrigger value="contributed">Contributed Projects</TabsTrigger>
-								</TabsList>
+							<div className="flex flex-col sm:flex-row items-center gap-2">
+								<div>
+									<TabsList className={"shadow"}>
+										<TabsTrigger value="created">Created Projects</TabsTrigger>
+										<TabsTrigger value="contributed">Contributed Projects</TabsTrigger>
+									</TabsList>
+								</div>
 								
-								<Dialog>
-									<DialogTrigger asChild>
-										<Button
-											variant={"outline"}
-											className={"shadow"}
-										><Plus/></Button>
-									</DialogTrigger>
-									{userInfo && userInfo?.github ? (
-										<>
-											<DialogContent className="sm:max-w-[425px]">
-												<DialogHeader>
-													<DialogTitle>Add a project</DialogTitle>
-													<DialogDescription>
-														Add your project here. Click save when you&apos;re done.
-													</DialogDescription>
-												</DialogHeader>
-												<form onSubmit={handleSubmitAddProjectForm}>
-													<div className="grid gap-4 py-4">
-														<div className="grid grid-cols-4 items-center gap-4">
-															<Label htmlFor="title" className="text-right">
-																Title
-															</Label>
-															<Input
-																id="title"
-																name="title"
-																value={addProjectFormData.title}
-																onChange={handleAddProjectInfoChange}
-																className="col-span-3"
-															/>
+								<div className={"flex items-center gap-2"}>
+									<Dialog>
+										<DialogTrigger asChild>
+											<Button
+												variant={"outline"}
+												className={"shadow"}
+											><Plus/></Button>
+										</DialogTrigger>
+										{userInfo && userInfo?.github ? (
+											<>
+												<DialogContent className="sm:max-w-[425px]">
+													<DialogHeader>
+														<DialogTitle>Add a project</DialogTitle>
+														<DialogDescription>
+															Add your project here. Click save when you&apos;re done.
+														</DialogDescription>
+													</DialogHeader>
+													<form onSubmit={handleSubmitAddProjectForm}>
+														<div className="grid gap-4 py-4">
+															<div className="grid grid-cols-4 items-center gap-4">
+																<Label htmlFor="title" className="text-right">
+																	Title
+																</Label>
+																<Input
+																	id="title"
+																	name="title"
+																	value={addProjectFormData.title}
+																	onChange={handleAddProjectInfoChange}
+																	className="col-span-3"
+																/>
+															</div>
 														</div>
-													</div>
-													<DialogFooter>
-														<Button type="submit">{addProjectLoading ? <span
-															className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
-													</DialogFooter>
-													
-													{addProjectError ? (
-														<div className={"text-sm text-center text-red-500 mt-4"}>{addProjectError}</div>
-													) : null}
-												</form>
-											</DialogContent>
-										</>
-									) : (
-										<>
-											<DialogContent className="sm:max-w-[425px]">
-												<DialogHeader>
-													<DialogTitle>Add your GitHub username</DialogTitle>
-													<DialogDescription>
-														You first need to add your GitHub username to your profile.
-													</DialogDescription>
-												</DialogHeader>
-											</DialogContent>
-										</>
-									)}
-								</Dialog>
-								
-								<Button onClick={handleRefreshProjects}><RefreshCcw
-									className={refreshingProjectLoading ? 'animate-spin ease-in-out' : ''}/></Button>
+														<DialogFooter>
+															<Button type="submit">{addProjectLoading ? <span
+																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
+														</DialogFooter>
+														
+														{addProjectError ? (
+															<div className={"text-sm text-center text-red-500 mt-4"}>{addProjectError}</div>
+														) : null}
+													</form>
+												</DialogContent>
+											</>
+										) : (
+											<>
+												<DialogContent className="sm:max-w-[425px]">
+													<DialogHeader>
+														<DialogTitle>Add your GitHub username</DialogTitle>
+														<DialogDescription>
+															You first need to add your GitHub username to your profile.
+														</DialogDescription>
+													</DialogHeader>
+												</DialogContent>
+											</>
+										)}
+									</Dialog>
+									
+									<Button onClick={handleRefreshProjects}><RefreshCcw
+										className={refreshingProjectLoading ? 'animate-spin ease-in-out' : ''}/></Button>
+								</div>
 							</div>
 							<TabsContent value="created">
-								{projects ? (
+								{projects && projects.length > 0 ? (
 									<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
 										{projects.map((project: Project) => (
 											<Card
@@ -966,7 +970,7 @@ export default function UserProfilePage() {
 										))}
 									</section>
 								) : (
-									<div>No projects created</div>
+									<div className={"text-center sm:text-left sm:ml-4 mt-4"}>No projects created</div>
 								)}
 							</TabsContent>
 							<TabsContent value="contributed">
@@ -1007,7 +1011,7 @@ export default function UserProfilePage() {
 										))}
 									</section>
 								) : (
-									<div>No projects contributed (coming soon)</div>
+									<div className={"text-center sm:text-left sm:ml-4 mt-4"}>No projects contributed (coming soon)</div>
 								)}
 							</TabsContent>
 						</Tabs>
