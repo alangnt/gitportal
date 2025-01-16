@@ -413,11 +413,6 @@ export default function UserProfilePage() {
 		window.open(twitterUrl, '_blank')
 	}
 	
-	const shareToLinkedIn = (url: string) => {
-		const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?description=${encodeURIComponent(url)}`
-		window.open(linkedInUrl, '_blank')
-	}
-	
 	const [selectedBgColor, setSelectedBgColor] = useState<string | null>(null);
 	const [selectedTextColor, setSelectedTextColor] = useState<string | null>(null);
 	
@@ -864,7 +859,7 @@ export default function UserProfilePage() {
 													<p className="text-sm text-gray-500 md:truncate">{project.description}</p>
 												</CardContent>
 												<CardFooter className="flex flex-col gap-4 text-sm text-gray-500 w-full">
-													<div className={"flex justify-between w-full"}>
+													<div className={"flex flex-col sm:flex-row justify-between gap-2 w-full"}>
 														<div className="flex items-center gap-4">
                               <span className="flex items-center gap-1">
                                 <Star className="h-4 w-4"/>
@@ -891,20 +886,24 @@ export default function UserProfilePage() {
 																className={"w-full"}
 															>Share project</Button>
 														</DialogTrigger>
-														<DialogContent>
-															<DialogTitle>You can share your project card everywhere !</DialogTitle>
+														<DialogContent className={"flex flex-col items-center w-full max-h-[80vh] overflow-auto"}>
+															<DialogTitle className={"flex flex-wrap mt-4"}>You can share your project card
+																everywhere</DialogTitle>
 															<Card
 																ref={cardRef}
+																className={"w-fit sm:w-full"}
 																style={{
 																	backgroundColor: selectedBgColor || "black",
 																	color: selectedTextColor || "white"
 																}}>
 																<CardHeader>
-																	<CardTitle className={"text-2xl"}>{project.completeTitle}</CardTitle>
-																	<CardDescription>{userInfo?.github}/{project.title}</CardDescription>
+																	<CardTitle
+																		className={"text-center sm:text-left text-2xl"}>{project.completeTitle}</CardTitle>
+																	<CardDescription
+																		className={"text-center sm:text-left"}>{userInfo?.github}/{project.title}</CardDescription>
 																</CardHeader>
-																<CardContent className={"flex gap-4"}>
-																	<div className={"rounded-md overflow-hidden w-full h-full"}>
+																<CardContent className={"flex flex-col sm:flex-row gap-4"}>
+																	<div className={"rounded-md w-full h-full overflow-hidden"}>
 																		<SVG
 																			text={project.url}
 																			options={{
@@ -926,7 +925,7 @@ export default function UserProfilePage() {
 															<section className={"flex flex-col gap-2 w-full"}>
 																<div className={"flex flex-col gap-2"}>
 																	<h3>Edit the background color</h3>
-																	<div className={"flex gap-2 w-full mb-4"}>
+																	<div className={"grid grid-cols-4 sm:flex gap-2 w-full mb-4"}>
 																		{colorPalette.map((color: string) => (
 																			<Button
 																				key={color}
@@ -939,7 +938,7 @@ export default function UserProfilePage() {
 																		))}
 																	</div>
 																	<h3>Edit the text color</h3>
-																	<div className={"flex gap-2 w-full"}>
+																	<div className={"grid grid-cols-4 sm:flex gap-2 w-full"}>
 																		{colorPalette.map((color: string) => (
 																			<Button
 																				key={color}
@@ -952,15 +951,13 @@ export default function UserProfilePage() {
 																		))}
 																	</div>
 																</div>
-																<div className="flex items-center gap-4 mt-4 w-full">
+																<div className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full">
 																	<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
 																		Image</Button>
 																	<Button className={"w-full"}
 																	        onClick={() => shareToTwitter(project.title, project.url)}>Share
 																		on
 																		Twitter</Button>
-																	<Button className={"w-full"} onClick={() => shareToLinkedIn(project.url)}>Share on
-																		LinkedIn</Button>
 																</div>
 															</section>
 														</DialogContent>
