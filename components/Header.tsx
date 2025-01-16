@@ -22,7 +22,6 @@ import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 
 import {signIn, signOut, useSession} from "next-auth/react";
-import {useState} from "react";
 
 import Link from "next/link";
 
@@ -32,22 +31,6 @@ import {User2} from "lucide-react"
 
 export default function Header() {
 	const {data: session, status} = useSession();
-	
-	const [signInError, setSignInError] = useState<string | null>(null);
-	
-	const handleGitHubSignIn = async () => {
-		try {
-			const result = await signIn("github", {redirect: false});
-			if (result?.error) {
-				setSignInError(result.error);
-			} else {
-				setSignInError(null);
-			}
-		} catch (error) {
-			console.error("Error during sign-in:", error);
-			setSignInError("Unexpected error. Please try again.");
-		}
-	};
 	
 	return (
 		<header className={"flex justify-between border-b-[1px] w-full px-2 max-lg:pr-6"}>
@@ -86,8 +69,8 @@ export default function Header() {
 								
 								<DropdownMenuItem
 									className={"cursor-pointer"}
-									onClick={() => {
-										signOut();
+									onClick={async () => {
+										await signOut();
 									}}
 								>
 									Sign Out
@@ -113,15 +96,13 @@ export default function Header() {
 										<Button
 											type="submit"
 											className={"w-full"}
-											onClick={handleGitHubSignIn}
+											onClick={async () => {
+												await signIn("github")
+											}}
 										>
 											<GitHubIcon/>
 											<span>Sign In</span>
 										</Button>
-										
-										{signInError ? (
-											<div className={"text-sm text-center text-red-500 mt-4"}>{signInError}</div>
-										) : null}
 										
 										<Button variant={"outline"} className={"font-semibold w-full hidden"}>
 											{/*<Github/>*/}
