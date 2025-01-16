@@ -36,7 +36,7 @@ export async function PATCH(req: NextRequest) {
 		
 		for (const project of userProjects) {
 			const baseUrl =
-				process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+				process.env.NEXT_PUBLIC_BASE_URL;
 			const apiUrl = `${baseUrl}/api/github?owner=${userGitHub}&repo=${project.title}`;
 			
 			const response = await fetch(apiUrl, {

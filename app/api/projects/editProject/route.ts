@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest) {
 		}
 		
 		const baseUrl =
-			process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+			process.env.NEXT_PUBLIC_BASE_URL;
 		const apiUrl = `${baseUrl}/api/github?owner=${user}&repo=${title}`;
 		
 		const response = await fetch(apiUrl, {
