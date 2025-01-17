@@ -25,7 +25,7 @@ import {Badge} from "@/components/ui/badge";
 import {Button} from "@/components/ui/button";
 
 // LUCIDE
-import {Bookmark, ExternalLink, GitFork, Heart, Star} from "lucide-react";
+import {Bookmark, ExternalLink, GitFork, Heart, Star, X} from "lucide-react";
 
 // HEADER
 import Header from "@/components/Header";
@@ -197,7 +197,7 @@ export default function Home() {
 			<Header/>
 			
 			<main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4"}>
-				<section className={"w-full"}>
+				<section className={"flex items-center w-full relative"}>
 					<Input
 						type="text"
 						value={searchQuery}
@@ -205,6 +205,7 @@ export default function Home() {
 						placeholder={"Find an open source project now..."}
 						className={"w-full shadow"}
 					/>
+					<Button className={'absolute right-0'} onClick={() => setSearchQuery('')} variant={'ghost'}><X /></Button>
 				</section>
 				
 				{projects && projects.length > 0 ? (
