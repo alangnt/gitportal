@@ -44,7 +44,7 @@ export default function Header() {
 						<Image src={'/icons/icon.png'} alt={'Icon logo'} height={'30'} width={'30'}/>
 					</div>
 					<h1
-						className={"font-semibold text-3xl text-center"}>GitPortal</h1>
+						className={"hidden sm:flex font-semibold text-3xl text-center"}>GitPortal</h1>
 				</Link>
 			</div>
 			
