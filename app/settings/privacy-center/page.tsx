@@ -13,7 +13,7 @@ export default function PrivacyCenterPage() {
 			<main className="flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-6">
 				<h1 className="text-3xl font-bold">Privacy Center</h1>
 				<div className="grid gap-6 md:grid-cols-2">
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle>Your Privacy Rights</CardTitle>
 							<CardDescription>Learn about your data privacy rights</CardDescription>
@@ -31,7 +31,7 @@ export default function PrivacyCenterPage() {
 							</ul>
 						</CardContent>
 					</Card>
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle>Data We Collect</CardTitle>
 							<CardDescription>Understand what data we collect and why</CardDescription>
@@ -53,7 +53,7 @@ export default function PrivacyCenterPage() {
 				<div className="mb-12">
 					<h2 className="text-2xl font-semibold mb-4">Additional Resources</h2>
 					<div className="grid gap-4 md:grid-cols-2">
-						<Card>
+						<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2">
 									<FileText className="h-5 w-5"/>
@@ -70,7 +70,7 @@ export default function PrivacyCenterPage() {
 								</Link>
 							</CardContent>
 						</Card>
-						<Card>
+						<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2">
 									<Cookie className="h-5 w-5"/>

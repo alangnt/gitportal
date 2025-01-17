@@ -213,7 +213,7 @@ export default function Home() {
 							<Dialog key={project._id}>
 								<DialogTrigger asChild>
 									<Card
-										className={"hover:-translate-y-1 hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}
+										className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}
 										key={project._id}>
 										<CardHeader>
 											<CardTitle className="flex items-center justify-between">

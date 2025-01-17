@@ -812,7 +812,7 @@ export default function UserProfilePage() {
 																				/>
 																			</div>
 																		</div>
-																		<DialogFooter>
+																		<DialogFooter className={'gap-2 sm:gap-0 mt-4 sm:mt-0'}>
 																			<Dialog>
 																				<DialogTrigger asChild>
 																					<Button
@@ -918,7 +918,7 @@ export default function UserProfilePage() {
 																	</div>
 																	<div className={"flex items-center justify-center w-full"}>
 																		<h2 className={"text-2xl text-center"}>Seen on<br/><span
-																			className={"font-semibold"}>GitPortal</span></h2>
+																			className={"font-semibold"}>GitPortal.org</span></h2>
 																	</div>
 																</CardContent>
 															</Card>

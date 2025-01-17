@@ -16,7 +16,7 @@ export default function CookiePolicyPage() {
 				<p className="text-muted-foreground mb-8">Last updated: January 14, 2025</p>
 				
 				<div className="grid gap-6 md:grid-cols-2 mb-12">
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<Cookie className="h-5 w-5"/>
@@ -29,7 +29,7 @@ export default function CookiePolicyPage() {
 								owners of the site.</p>
 						</CardContent>
 					</Card>
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<Info className="h-5 w-5"/>

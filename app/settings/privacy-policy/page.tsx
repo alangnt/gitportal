@@ -15,7 +15,7 @@ export default function PrivacyPolicyPage() {
 				<p className="text-muted-foreground mb-8">Last updated: January 13, 2025</p>
 				
 				<div className="grid gap-6 md:grid-cols-2 mb-12">
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<Shield className="h-5 w-5"/>
@@ -28,7 +28,7 @@ export default function PrivacyPolicyPage() {
 								outlines our practices regarding the collection, use, and protection of your personal information.</p>
 						</CardContent>
 					</Card>
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<Eye className="h-5 w-5"/>
@@ -113,7 +113,7 @@ export default function PrivacyPolicyPage() {
 				</Accordion>
 				
 				<div className="flex flex-col gap-6 mt-12">
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<Lock className="h-5 w-5"/>
@@ -133,7 +133,7 @@ export default function PrivacyPolicyPage() {
 						</CardContent>
 					</Card>
 					
-					<Card>
+					<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
 								<BookOpen className="h-5 w-5"/>

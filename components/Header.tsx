@@ -24,6 +24,7 @@ import {Input} from "@/components/ui/input";
 import {signIn, signOut, useSession} from "next-auth/react";
 
 import Link from "next/link";
+import Image from "next/image";
 
 import {SidebarTrigger} from "@/components/ui/sidebar";
 
@@ -38,7 +39,13 @@ export default function Header() {
 				{status === "authenticated" && (
 					<SidebarTrigger/>
 				)}
-				<h1 className={"text-3xl text-center p-2"}>GitPortal</h1>
+				<Link href={'/'} className={"flex items-center gap-2 p-1 pr-4 m-1 hover:bg-black hover:text-white hover:rounded-md duration-150 transition-all cursor-pointer"}>
+					<div className={'rounded-md overflow-hidden ml-2'}>
+						<Image src={'/icons/icon.png'} alt={'Icon logo'} height={'30'} width={'30'}/>
+					</div>
+					<h1
+						className={"font-semibold text-3xl text-center"}>GitPortal</h1>
+				</Link>
 			</div>
 			
 			{/* NAVIGATION MENU */}
