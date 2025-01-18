@@ -23,14 +23,36 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
 	title: "GitPortal",
-	description: "Where all the projects meet",
+	description: "Your Gateway to Open Source Collaboration",
 	applicationName: "GitPortal",
 	authors: [{name: "Alan Geirnaert", url: "https://alan.geirnaert.com"}],
 	creator: "Alan Geirnaert",
 	publisher: "Vercel",
 	generator: "Next.js",
 	keywords: "next.js, react, github",
-	icons: {icon: "/public/icons/icon.png", apple: "/public/icons/icon.png"}
+	icons: {icon: "/icons/icon.png", apple: "/icons/icon.png"},
+	openGraph: {
+		type: "website",
+		url: "https://gitportal.org",
+		title: "GitPortal",
+		description: "Your Gateway to Open Source Collaboration",
+		siteName: "GitPortal",
+		images: [{
+			url: "/icons/icon.png",
+		}]
+	},
+	twitter: {
+		card: "summary_large_image",
+		site: "@gnt_alan",
+		creator: "@gnt_alan",
+		images: "/icons/icon.png",
+	},
+	appleWebApp: {
+		capable: true,
+		title: "GitPortal",
+		statusBarStyle: "black-translucent"
+	},
+	bookmarks: "https://gitportal.org",
 };
 
 export default async function RootLayout({
