@@ -413,21 +413,32 @@ export default function UserProfilePage() {
 		window.open(twitterUrl, '_blank')
 	}
 	
-	const [selectedBgColor, setSelectedBgColor] = useState<string | null>(null);
-	const [selectedTextColor, setSelectedTextColor] = useState<string | null>(null);
+	const [cardColors, setCardColors] = useState({
+		bgColor: "",
+		textColor: "",
+		subTextColor: "",
+	})
 	
-	const colorPalette = [
-		"#000000", // Black
-		"#FFFFFF", // White
-		"#FF5733", // Orange
-		"#FFC300", // Yellow
-		"#8E44AD", // Purple
-		"#C70039", // Red
-		"#34495E", // Gray
-		"#2ECC71", // Emerald
-		"#1ABC9C", // Aqua
-		"#F39C12", // Orange-Yellow
-	]
+	const handleBgColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setCardColors((prevColors) => ({
+			...prevColors,
+			bgColor: event.target.value,
+		}));
+	};
+	
+	const handleTextColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setCardColors((prevColors) => ({
+			...prevColors,
+			textColor: event.target.value,
+		}));
+	};
+	
+	const handleSubTextColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setCardColors((prevColors) => ({
+			...prevColors,
+			subTextColor: event.target.value,
+		}));
+	};
 	
 	useEffect(() => {
 		if (status === "unauthenticated") {
@@ -880,8 +891,11 @@ export default function UserProfilePage() {
 														<DialogTrigger asChild>
 															<Button
 																onClick={() => {
-																	setSelectedBgColor("#FFFFFF");
-																	setSelectedTextColor("#000000")
+																	setCardColors({
+																		bgColor: "#FFFFFF",
+																		textColor: "#000000",
+																		subTextColor: "#737373"
+																	});
 																}}
 																className={"w-full"}
 															>Share project</Button>
@@ -893,14 +907,19 @@ export default function UserProfilePage() {
 																ref={cardRef}
 																className={"w-fit sm:w-full"}
 																style={{
-																	backgroundColor: selectedBgColor || "black",
-																	color: selectedTextColor || "white"
+																	backgroundColor: cardColors.bgColor,
+																	color: cardColors.textColor
 																}}>
 																<CardHeader>
 																	<CardTitle
 																		className={"text-center sm:text-left text-2xl"}>{project.completeTitle}</CardTitle>
 																	<CardDescription
-																		className={"text-center sm:text-left"}>{userInfo?.github}/{project.title}</CardDescription>
+																		className={"text-center sm:text-left"}
+																		style={{
+																			color: cardColors.subTextColor
+																		}}>
+																		{userInfo?.github}/{project.title}
+																	</CardDescription>
 																</CardHeader>
 																<CardContent className={"flex flex-col sm:flex-row gap-4"}>
 																	<div className={"rounded-md w-full h-full overflow-hidden"}>
@@ -922,36 +941,67 @@ export default function UserProfilePage() {
 																	</div>
 																</CardContent>
 															</Card>
-															<section className={"flex flex-col gap-2 w-full"}>
-																<div className={"flex flex-col gap-2"}>
-																	<h3>Edit the background color</h3>
-																	<div className={"grid grid-cols-4 sm:flex gap-2 w-full mb-4"}>
-																		{colorPalette.map((color: string) => (
-																			<Button
-																				key={color}
-																				className={"w-full shadow"}
+															<section className={"flex flex-col sm:flex-row gap-2 sm:gap-8 w-full"}>
+																<section className={"flex flex-col gap-2 w-full"}>
+																	<article>
+																		<Label htmlFor={"bg-color"}>Edit the background color</Label>
+																		<div className={"flex w-full mb-4 relative"}>
+																			<Input
+																				type={"color"}
+																				id={"bg-color"}
+																				name={"bg-color"}
+																				value={cardColors.bgColor}
+																				onChange={handleBgColorChange}
+																				className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																			></Input>
+																			<div
+																				className={"w-full h-10 border-[1px] rounded-md"}
 																				style={{
-																					backgroundColor: color
+																					backgroundColor: cardColors.bgColor
 																				}}
-																				onClick={() => setSelectedBgColor(color)}
-																			></Button>
-																		))}
-																	</div>
-																	<h3>Edit the text color</h3>
-																	<div className={"grid grid-cols-4 sm:flex gap-2 w-full"}>
-																		{colorPalette.map((color: string) => (
-																			<Button
-																				key={color}
-																				className={"w-full shadow"}
+																			></div>
+																		</div>
+																	</article>
+																	<article>
+																		<Label htmlFor={"text-color"}>Edit the text color</Label>
+																		<div className={"flex w-full mb-4 relative"}>
+																			<Input
+																				type={"color"}
+																				id={"text-color"}
+																				name={"text-color"}
+																				value={cardColors.textColor}
+																				onChange={handleTextColorChange}
+																				className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																			></Input>
+																			<div
+																				className={"w-full h-10 border-[1px] rounded-md"}
 																				style={{
-																					backgroundColor: color
+																					backgroundColor: cardColors.textColor
 																				}}
-																				onClick={() => setSelectedTextColor(color)}
-																			></Button>
-																		))}
-																	</div>
-																</div>
-																<div className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full">
+																			></div>
+																		</div>
+																	</article>
+																	<article>
+																		<Label htmlFor={"subtext-color"}>Edit the sub-text color</Label>
+																		<div className={"flex w-full mb-4 relative"}>
+																			<Input
+																				type={"color"}
+																				id={"subtext-color"}
+																				name={"subtext-color"}
+																				value={cardColors.subTextColor}
+																				onChange={handleSubTextColorChange}
+																				className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																			></Input>
+																			<div
+																				className={"w-full h-10 border-[1px] rounded-md"}
+																				style={{
+																					backgroundColor: cardColors.subTextColor
+																				}}
+																			></div>
+																		</div>
+																	</article>
+																</section>
+																<div className="flex sm:flex-col flex-row items-center gap-4 mt-4 sm:mt-6 w-full">
 																	<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
 																		Image</Button>
 																	<Button className={"w-full"}

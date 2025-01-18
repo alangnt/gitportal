@@ -53,7 +53,7 @@ export default function AboutPage() {
 							</CardHeader>
 							<CardContent>
 								<p className="mb-4">
-									Hi there! I&apos;m Alan Geirnaert, the founder and lead developer of GitPortal. With over a decade
+									Hi there! I&apos;m Alan Geirnaert, the founder and lead developer of GitPortal. With over six months
 									of experience in software development and a passion for open-source, I created this platform to
 									address the need for a centralized space where developers can showcase their contributions and connect
 									with others in the community.
@@ -62,10 +62,6 @@ export default function AboutPage() {
 									My journey in tech has been driven by the belief that open collaboration leads to innovation and
 									growth. Through GitPortal, I aim to foster a supportive environment that encourages developers
 									to share their work, learn from each other, and make meaningful connections.
-								</p>
-								<p className="mb-6">
-									When I&apos;m not coding or working on GitPortal, you can find me speaking at tech
-									conferences, mentoring aspiring developers, or contributing to various open-source projects.
 								</p>
 								<div className="flex space-x-4">
 									<Link href="https://github.com/alangnt" target="_blank" rel="noopener noreferrer">
