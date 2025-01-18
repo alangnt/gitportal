@@ -10,10 +10,6 @@ import {AppSidebar} from "@/components/core/app-sidebar";
 
 import {Analytics} from "@vercel/analytics/react"
 
-import icon from "@/public/icons/icon.png"
-
-const url = icon;
-
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
 	variable: "--font-geist-sans",
@@ -34,7 +30,7 @@ export const metadata: Metadata = {
 	publisher: "Vercel",
 	generator: "Next.js",
 	keywords: "next.js, react, github",
-	icons: {icon: url, apple: url},
+	icons: {icon: "/icons/icon.png", apple: "/icons/icon.png"},
 	openGraph: {
 		type: "website",
 		url: "https://gitportal.org",
@@ -42,14 +38,14 @@ export const metadata: Metadata = {
 		description: "Your Gateway to Open Source Collaboration",
 		siteName: "GitPortal",
 		images: [{
-			url: url,
+			url: "/icons/icon.png",
 		}]
 	},
 	twitter: {
 		card: "summary_large_image",
 		site: "@gnt_alan",
 		creator: "@gnt_alan",
-		images: url,
+		images: "/icons/icon.png",
 	},
 	appleWebApp: {
 		capable: true,
