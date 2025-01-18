@@ -1,6 +1,6 @@
 'use client'
 
-import {Bookmark, Home, Settings} from "lucide-react"
+import {Bookmark, Home, Info, Settings} from "lucide-react"
 
 import {
 	Sidebar,
@@ -32,6 +32,11 @@ const items = [
 		title: "Settings",
 		url: "/settings",
 		icon: Settings,
+	},
+	{
+		title: "About Us",
+		url: "/about-us",
+		icon: Info,
 	},
 ]
 
