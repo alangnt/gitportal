@@ -47,8 +47,15 @@ export default function Header() {
 			
 			<NavigationMenu>
 				<NavigationMenuList>
-					<p>{session?.user?.id}</p>
-					
+					<a
+						href="https://www.producthunt.com/posts/gitportal?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gitportal"
+						target="_blank">
+						<img
+							src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=795574&theme=light&t=1737322305297"
+							alt="GitPortal - Your&#0032;Gateway&#0032;to&#0032;Open&#0032;Source&#0032;Collaboration | Product Hunt"
+							width="200"
+							height="40"/>
+					</a>
 					{status === "authenticated" && (
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
