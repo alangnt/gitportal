@@ -28,7 +28,6 @@ export default function SettingsPage() {
 	const [loading, setLoading] = useState<boolean>(true);
 	
 	const [userInfo, setUserInfo] = useState<User | null>(null);
-	const [userFetched, setUserFetched] = useState(false);
 	
 	// FETCH USER INFO
 	const fetchUserProfile = async () => {
@@ -53,7 +52,6 @@ export default function SettingsPage() {
 			
 			const user = userInfos[0];
 			setUserInfo(user);
-			setUserFetched(true);
 			
 			setLoading(false);
 		} catch (error) {
@@ -171,174 +169,174 @@ export default function SettingsPage() {
 	}
 	
 	useEffect(() => {
-		if (status === "unauthenticated") {
-			redirect("/");
-		} else if (status === "authenticated") {
+		if (status === "authenticated") {
 			fetchUserProfile();
+		} else if (status === "unauthenticated") {
+			setLoading(false);
 		}
-	}, [status, userFetched]);
+	}, [status]);
 	
 	if (loading) return <div>Loading...</div>;
 	
 	return (
 		<>
-			{status === "authenticated" && (
-				<>
-					<Header/>
-					
-					<main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4"}>
-						<h2 className={"text-3xl font-semibold"}>Settings</h2>
-						
-						<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
-							<CardHeader>
-								<CardTitle>Privacy and Terms</CardTitle>
-								<CardDescription>Review our privacy policy and terms of service</CardDescription>
-							</CardHeader>
-							<CardContent className="flex flex-col gap-4">
-								<div className="flex justify-between items-center">
-									<span>Privacy Center</span>
-									<Link href="/settings/privacy-center">
-										<Button variant="outline">View</Button>
-									</Link>
-								</div>
-								<div className="flex justify-between items-center">
-									<span>Privacy Policy</span>
-									<Link href="/settings/privacy-policy">
-										<Button variant="outline">View</Button>
-									</Link>
-								</div>
-								<div className="flex justify-between items-center">
-									<span>Contact Us</span>
-									<Dialog>
-										<DialogTrigger asChild>
-											<Button variant="outline">Contact</Button>
-										</DialogTrigger>
-										<DialogContent>
-											<DialogHeader>
-												<DialogTitle className={"text-2xl"}>Contact Us</DialogTitle>
-												<DialogDescription>
-													We&apos;d love to hear from you. Please fill out this form and we&apos;ll get back to you as
-													soon
-													as
-													possible.
-												</DialogDescription>
-											</DialogHeader>
-											<form onSubmit={handleSubmit}>
-												<div className="grid gap-4 mt-4">
-													<div className="grid gap-2">
-														<Label htmlFor="name">Name</Label>
-														<Input
-															id="name"
-															name="name"
-															value={formData.name}
-															onChange={handleInputChange}
-															required
-														/>
-													</div>
-													<div className="grid gap-2">
-														<Label htmlFor="email">Email</Label>
-														<Input
-															id="email"
-															name="email"
-															type="email"
-															value={formData.email}
-															onChange={handleInputChange}
-															required
-														/>
-													</div>
-													<div className="grid gap-2">
-														<Label htmlFor={"subject"}>Subject</Label>
-														<Input
-															id="subject"
-															name="subject"
-															value={formData.subject}
-															onChange={handleInputChange}
-															required
-														/>
-													</div>
-													<div className="grid gap-2">
-														<Label htmlFor="message">Message</Label>
-														<Textarea
-															id="message"
-															name="message"
-															value={formData.message}
-															onChange={handleInputChange}
-															required
-														/>
-													</div>
-												</div>
-												<DialogFooter className={"mt-4"}>
-													<div className={"flex items-center gap-2"}>
-														{sendMessageError ? (
-															<div className={"text-sm text-center text-red-500"}>{sendMessageError}</div>
-														) : null}
-														{sendMessageSuccess ? (
-															<div className={"text-sm text-center text-green-500"}>{sendMessageSuccess}</div>
-														) : null}
-														<Button type="submit">{sendMessageLoading ? <span
-															className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Send Message"}</Button>
-													</div>
-												</DialogFooter>
-											</form>
-										</DialogContent>
-									</Dialog>
-								</div>
-							</CardContent>
-						</Card>
-						
-						<Card className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
-							<CardHeader>
-								<CardTitle>Delete Account</CardTitle>
-								<CardDescription>Permanently delete your account and all associated data</CardDescription>
-							</CardHeader>
-							<CardContent>
-								<p className="text-sm text-gray-500">
-									Warning: This action is irreversible. All your projects, contributions, and personal data will be
-									permanently deleted.
-								</p>
-							</CardContent>
-							<CardFooter>
-								<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-									<DialogTrigger asChild>
-										<Button variant="destructive">
-											<Trash2 className="mr-2 h-4 w-4"/>
-											Delete Account
-										</Button>
-									</DialogTrigger>
-									<DialogContent>
-										<DialogHeader>
-											<DialogTitle>Are you absolutely sure?</DialogTitle>
-											<DialogDescription>
-												This action cannot be undone. This will permanently delete your account and remove your data
-												from our servers.
-											</DialogDescription>
-										</DialogHeader>
-										<div className="flex flex-col gap-4 py-4">
-											<p className="text-sm text-gray-500">
-												To confirm, please type &quot;DELETE&quot; in the input field below:
-											</p>
-											<Input
-												id={"delete"}
-												name={"delete"}
-												value={deleteFormData.delete}
-												onChange={handleDeleteInputChange}
-												placeholder="Type DELETE here"
-											/>
+			<Header/>
+			
+			<main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4"}>
+				<h2 className={"text-3xl font-semibold"}>Settings</h2>
+				
+				<Card
+					className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+					<CardHeader>
+						<CardTitle>Privacy and Terms</CardTitle>
+						<CardDescription>Review our privacy policy and terms of service</CardDescription>
+					</CardHeader>
+					<CardContent className="flex flex-col gap-4">
+						<div className="flex justify-between items-center">
+							<span>Privacy Center</span>
+							<Link href="/settings/privacy-center">
+								<Button variant="outline">View</Button>
+							</Link>
+						</div>
+						<div className="flex justify-between items-center">
+							<span>Privacy Policy</span>
+							<Link href="/settings/privacy-policy">
+								<Button variant="outline">View</Button>
+							</Link>
+						</div>
+						<div className="flex justify-between items-center">
+							<span>Contact Us</span>
+							<Dialog>
+								<DialogTrigger asChild>
+									<Button variant="outline">Contact</Button>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogHeader>
+										<DialogTitle className={"text-2xl"}>Contact Us</DialogTitle>
+										<DialogDescription>
+											We&apos;d love to hear from you. Please fill out this form and we&apos;ll get back to you as
+											soon
+											as
+											possible.
+										</DialogDescription>
+									</DialogHeader>
+									<form onSubmit={handleSubmit}>
+										<div className="grid gap-4 mt-4">
+											<div className="grid gap-2">
+												<Label htmlFor="name">Name</Label>
+												<Input
+													id="name"
+													name="name"
+													value={formData.name}
+													onChange={handleInputChange}
+													required
+												/>
+											</div>
+											<div className="grid gap-2">
+												<Label htmlFor="email">Email</Label>
+												<Input
+													id="email"
+													name="email"
+													type="email"
+													value={formData.email}
+													onChange={handleInputChange}
+													required
+												/>
+											</div>
+											<div className="grid gap-2">
+												<Label htmlFor={"subject"}>Subject</Label>
+												<Input
+													id="subject"
+													name="subject"
+													value={formData.subject}
+													onChange={handleInputChange}
+													required
+												/>
+											</div>
+											<div className="grid gap-2">
+												<Label htmlFor="message">Message</Label>
+												<Textarea
+													id="message"
+													name="message"
+													value={formData.message}
+													onChange={handleInputChange}
+													required
+												/>
+											</div>
 										</div>
-										<DialogFooter className={"flex flex-col gap-2"}>
-											<Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
-											<Button variant="destructive" disabled={!canDelete} onClick={handleDeleteAccount}>
-												{deleteUserLoading ? <span
-													className={"animate-spin rounded-full w-4 h-4 border-t-red-800 border-2"}></span> : "Delete account"}
-											</Button>
+										<DialogFooter className={"mt-4"}>
+											<div className={"flex items-center gap-2"}>
+												{sendMessageError ? (
+													<div className={"text-sm text-center text-red-500"}>{sendMessageError}</div>
+												) : null}
+												{sendMessageSuccess ? (
+													<div className={"text-sm text-center text-green-500"}>{sendMessageSuccess}</div>
+												) : null}
+												<Button type="submit">{sendMessageLoading ? <span
+													className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Send Message"}</Button>
+											</div>
 										</DialogFooter>
-									</DialogContent>
-								</Dialog>
-							</CardFooter>
-						</Card>
-					</main>
-				</>
-			)}
+									</form>
+								</DialogContent>
+							</Dialog>
+						</div>
+					</CardContent>
+				</Card>
+				
+				{status === "authenticated" && (
+					<Card
+						className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+						<CardHeader>
+							<CardTitle>Delete Account</CardTitle>
+							<CardDescription>Permanently delete your account and all associated data</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<p className="text-sm text-gray-500">
+								Warning: This action is irreversible. All your projects, contributions, and personal data will be
+								permanently deleted.
+							</p>
+						</CardContent>
+						<CardFooter>
+							<Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+								<DialogTrigger asChild>
+									<Button variant="destructive">
+										<Trash2 className="mr-2 h-4 w-4"/>
+										Delete Account
+									</Button>
+								</DialogTrigger>
+								<DialogContent>
+									<DialogHeader>
+										<DialogTitle>Are you absolutely sure?</DialogTitle>
+										<DialogDescription>
+											This action cannot be undone. This will permanently delete your account and remove your data
+											from our servers.
+										</DialogDescription>
+									</DialogHeader>
+									<div className="flex flex-col gap-4 py-4">
+										<p className="text-sm text-gray-500">
+											To confirm, please type &quot;DELETE&quot; in the input field below:
+										</p>
+										<Input
+											id={"delete"}
+											name={"delete"}
+											value={deleteFormData.delete}
+											onChange={handleDeleteInputChange}
+											placeholder="Type DELETE here"
+										/>
+									</div>
+									<DialogFooter className={"flex flex-col gap-2"}>
+										<Button variant="outline" onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
+										<Button variant="destructive" disabled={!canDelete} onClick={handleDeleteAccount}>
+											{deleteUserLoading ? <span
+												className={"animate-spin rounded-full w-4 h-4 border-t-red-800 border-2"}></span> : "Delete account"}
+										</Button>
+									</DialogFooter>
+								</DialogContent>
+							</Dialog>
+						</CardFooter>
+					</Card>
+				)}
+			</main>
 		</>
 	)
 }

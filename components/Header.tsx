@@ -36,10 +36,9 @@ export default function Header() {
 	return (
 		<header className={"flex justify-between border-b-[1px] w-full px-2 max-lg:pr-6"}>
 			<div className={"flex items-center"}>
-				{status === "authenticated" && (
-					<SidebarTrigger/>
-				)}
-				<Link href={'/'} className={"flex items-center gap-2 p-1 pr-4 m-1 hover:bg-black hover:text-white hover:rounded-md duration-150 transition-all cursor-pointer"}>
+				<SidebarTrigger/>
+				<Link href={'/'}
+				      className={"flex items-center gap-2 p-1 pr-4 m-1 hover:bg-black hover:text-white hover:rounded-md duration-150 transition-all cursor-pointer"}>
 					<div className={'rounded-md overflow-hidden ml-2'}>
 						<Image src={'/icons/icon.png'} alt={'Icon logo'} height={'30'} width={'30'}/>
 					</div>

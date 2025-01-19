@@ -16,17 +16,20 @@ import {
 import {useSession} from "next-auth/react";
 import Link from "next/link";
 
+const authenticatedItems = [
+	{
+		title: "Saved",
+		url: "/bookmark",
+		icon: Bookmark
+	},
+]
+
 // Menu items.
 const items = [
 	{
 		title: "Home",
 		url: "/",
 		icon: Home,
-	},
-	{
-		title: "Saved",
-		url: "/bookmark",
-		icon: Bookmark
 	},
 	{
 		title: "Settings",
@@ -44,18 +47,20 @@ export function AppSidebar() {
 	const {data: session, status} = useSession();
 	
 	return (
-		<>
-			{status === "authenticated" && (
-				<Sidebar collapsible={"icon"}>
-					<SidebarContent>
-						<SidebarGroup>
-							<SidebarGroupLabel>Hi, {session?.user?.name} !</SidebarGroupLabel>
-						</SidebarGroup>
-						<SidebarGroup>
-							<SidebarGroupLabel>Application</SidebarGroupLabel>
-							<SidebarGroupContent>
-								<SidebarMenu>
-									{items.map((item) => (
+		<Sidebar collapsible={"icon"}>
+			<SidebarContent>
+				{status === "authenticated" && (
+					<SidebarGroup>
+						<SidebarGroupLabel>Hi, {session?.user?.name} !</SidebarGroupLabel>
+					</SidebarGroup>
+				)}
+				<SidebarGroup>
+					<SidebarGroupLabel>Application</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{status === "authenticated" ? (
+								<>
+									{authenticatedItems.map((item) => (
 										<SidebarMenuItem key={item.title}>
 											<SidebarMenuButton asChild>
 												<Link href={item.url}>
@@ -65,12 +70,22 @@ export function AppSidebar() {
 											</SidebarMenuButton>
 										</SidebarMenuItem>
 									))}
-								</SidebarMenu>
-							</SidebarGroupContent>
-						</SidebarGroup>
-					</SidebarContent>
-				</Sidebar>
-			)}
-		</>
+								</>
+							) : null}
+							{items.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild>
+										<Link href={item.url}>
+											<item.icon/>
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+			</SidebarContent>
+		</Sidebar>
 	)
 }
