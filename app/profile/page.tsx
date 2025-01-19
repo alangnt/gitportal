@@ -12,6 +12,15 @@ import {redirect} from 'next/navigation';
 import Header from "@/components/Header";
 
 // SHADCN
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -59,7 +68,8 @@ import {useQRCode} from "next-qrcode";
 import {toPng} from 'html-to-image'
 
 // Types
-import {Project, User} from "@/types/types";
+import {Category, Project, User} from "@/types/types";
+import {categoryPipe} from "@/utils/category";
 
 export default function UserProfilePage() {
 	const {data: session, status} = useSession();
@@ -157,7 +167,8 @@ export default function UserProfilePage() {
 	};
 	
 	const [addProjectFormData, setAddProjectFormData] = useState({
-		title: ''
+		title: '',
+		category: ''
 	})
 	
 	const [editProjectFormData, setEditProjectFormData] = useState({
@@ -174,12 +185,9 @@ export default function UserProfilePage() {
 		github: '',
 	})
 	
-	const handleAddProjectInfoChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) => {
-		const {name, value} = e.target
-		setAddProjectFormData((prev) => ({...prev, [name]: value}))
-	}
+	const handleAddProjectInfoChange = (field: string, value: string) => {
+		setAddProjectFormData((prev) => ({...prev, [field]: value}));
+	};
 	
 	const handleEditProjectInfoChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -764,9 +772,45 @@ export default function UserProfilePage() {
 																	id="title"
 																	name="title"
 																	value={addProjectFormData.title}
-																	onChange={handleAddProjectInfoChange}
+																	onChange={(e) =>
+																		handleAddProjectInfoChange(e.target.name, e.target.value)
+																	}
 																	className="col-span-3"
 																/>
+																<Label htmlFor="category" className="text-right">
+																	Category
+																</Label>
+																<Select
+																	onValueChange={(value) =>
+																		handleAddProjectInfoChange("category", value)
+																	}>
+																	<SelectTrigger className="w-[180px]">
+																		<SelectValue
+																			placeholder="Select a category"
+																		/>
+																	</SelectTrigger>
+																	<SelectContent>
+																		<SelectGroup>
+																			<SelectLabel>Categories</SelectLabel>
+																			
+																			<SelectItem value="frontend">Frontend</SelectItem>
+																			<SelectItem value="backend">Backend</SelectItem>
+																			<SelectItem value="fullstack">Full Stack</SelectItem>
+																			<SelectItem value="android">Android</SelectItem>
+																			<SelectItem value="apple">Apple</SelectItem>
+																			<SelectItem value="ai">AI</SelectItem>
+																			<SelectItem value="machineLearning">Machine Learning</SelectItem>
+																			<SelectItem value="dataAnalysis">Data Analysis</SelectItem>
+																			<SelectItem value="twoD">2D Games</SelectItem>
+																			<SelectItem value="threeD">3D Games</SelectItem>
+																			<SelectItem value="extension">Browser Extension</SelectItem>
+																			<SelectItem value="database">Database Management</SelectItem>
+																			<SelectItem value="orm">ORM</SelectItem>
+																			<SelectItem value="api">API Development</SelectItem>
+																			<SelectItem value="ui">UI Libraries</SelectItem>
+																		</SelectGroup>
+																	</SelectContent>
+																</Select>
 															</div>
 														</div>
 														<DialogFooter>
@@ -881,8 +925,13 @@ export default function UserProfilePage() {
 															</Link>
 														</div>
 													</CardTitle>
-													<Badge
-														className={"w-fit"}>{project.language ? project.language : "No particular language"}</Badge>
+													<div className={"flex gap-2"}>
+														<Badge className={"w-fit"}>
+															{project.language ? project.language : "None"}
+														</Badge>
+														<Badge className={"w-fit"}>{categoryPipe(project.category as keyof Category)}</Badge>
+													</div>
+												
 												</CardHeader>
 												<CardContent className={"flex flex-col gap-1"}>
 													<p
