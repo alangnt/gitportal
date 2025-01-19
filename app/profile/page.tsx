@@ -27,6 +27,7 @@ import {
 	Heart,
 	Mail,
 	MapPin,
+	Pipette,
 	Plus,
 	RefreshCcw,
 	Star,
@@ -417,6 +418,14 @@ export default function UserProfilePage() {
 		textColor: "",
 		subTextColor: "",
 	})
+	
+	const sampleColors = [
+		"#121212",
+		"#1a1a2e",
+		"#737373",
+		"#f5deb3",
+		"#f9f9f9"
+	]
 	
 	const handleBgColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setCardColors((prevColors) => ({
@@ -900,7 +909,8 @@ export default function UserProfilePage() {
 															>Share project</Button>
 														</DialogTrigger>
 														<DialogContent className={"flex flex-col items-center w-full max-h-[80vh] overflow-auto"}>
-															<DialogTitle className={"flex flex-wrap mt-4"}>You can share your project card
+															<DialogTitle className={"flex flex-wrap mt-4 mb-6 sm:mb-0"}>You can share your project
+																card
 																everywhere</DialogTitle>
 															<Card
 																ref={cardRef}
@@ -940,67 +950,118 @@ export default function UserProfilePage() {
 																	</div>
 																</CardContent>
 															</Card>
-															<section className={"flex flex-col sm:flex-row gap-2 sm:gap-8 w-full"}>
+															<section className={"flex flex-col gap-2 sm:gap-8 mt-6 w-full"}>
 																<section className={"flex flex-col gap-2 w-full"}>
-																	<article>
+																	<article className={"flex flex-col gap-2"}>
 																		<Label htmlFor={"bg-color"}>Edit the background color</Label>
-																		<div className={"flex w-full mb-4 relative"}>
-																			<Input
-																				type={"color"}
-																				id={"bg-color"}
-																				name={"bg-color"}
-																				value={cardColors.bgColor}
-																				onChange={handleBgColorChange}
-																				className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
-																			></Input>
-																			<div
-																				className={"w-full h-10 border-[1px] rounded-md"}
-																				style={{
-																					backgroundColor: cardColors.bgColor
-																				}}
-																			></div>
+																		<div className={"flex gap-2 w-full mb-4"}>
+																			<div className={"flex flex-wrap sm:flex-nowrap gap-2"}>
+																				{sampleColors.map((color: string) => (
+																					<Button
+																						key={color}
+																						style={{
+																							backgroundColor: color,
+																						}}
+																						onClick={() => setCardColors((prevColors) => ({
+																							...prevColors,
+																							bgColor: color
+																						}))}
+																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																					></Button>
+																				))}
+																			</div>
+																			<div className={"flex w-full relative"}>
+																				<Input
+																					type={"color"}
+																					id={"bg-color"}
+																					name={"bg-color"}
+																					value={cardColors.bgColor}
+																					onChange={handleBgColorChange}
+																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																				></Input>
+																				<div
+																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					style={{
+																						backgroundColor: cardColors.bgColor
+																					}}
+																				><Pipette className={"w-4 h-4"}/></div>
+																			</div>
 																		</div>
 																	</article>
-																	<article>
+																	<article className={"flex flex-col gap-2"}>
 																		<Label htmlFor={"text-color"}>Edit the text color</Label>
-																		<div className={"flex w-full mb-4 relative"}>
-																			<Input
-																				type={"color"}
-																				id={"text-color"}
-																				name={"text-color"}
-																				value={cardColors.textColor}
-																				onChange={handleTextColorChange}
-																				className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
-																			></Input>
-																			<div
-																				className={"w-full h-10 border-[1px] rounded-md"}
-																				style={{
-																					backgroundColor: cardColors.textColor
-																				}}
-																			></div>
+																		<div className={"flex gap-2 w-full mb-4"}>
+																			<div className={"flex flex-wrap sm:flex-nowrap gap-2"}>
+																				{sampleColors.map((color: string) => (
+																					<Button
+																						key={color}
+																						style={{
+																							backgroundColor: color,
+																						}}
+																						onClick={() => setCardColors((prevColors) => ({
+																							...prevColors,
+																							textColor: color
+																						}))}
+																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																					></Button>
+																				))}
+																			</div>
+																			<div className={"flex w-full relative"}>
+																				<Input
+																					type={"color"}
+																					id={"text-color"}
+																					name={"text-color"}
+																					value={cardColors.textColor}
+																					onChange={handleTextColorChange}
+																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																				></Input>
+																				<div
+																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					style={{
+																						backgroundColor: cardColors.textColor
+																					}}
+																				><Pipette className={"text-white w-4 h-4"}/></div>
+																			</div>
 																		</div>
 																	</article>
-																	<article>
+																	<article className={"flex flex-col gap-2"}>
 																		<Label htmlFor={"subtext-color"}>Edit the sub-text color</Label>
-																		<div className={"flex w-full mb-4 relative"}>
-																			<Input
-																				type={"color"}
-																				id={"subtext-color"}
-																				name={"subtext-color"}
-																				value={cardColors.subTextColor}
-																				onChange={handleSubTextColorChange}
-																				className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
-																			></Input>
-																			<div
-																				className={"w-full h-10 border-[1px] rounded-md"}
-																				style={{
-																					backgroundColor: cardColors.subTextColor
-																				}}
-																			></div>
+																		<div className={"flex gap-2 w-full"}>
+																			<div className={"flex flex-wrap sm:flex-nowrap gap-2"}>
+																				{sampleColors.map((color: string) => (
+																					<Button
+																						key={color}
+																						style={{
+																							backgroundColor: color,
+																						}}
+																						onClick={() => setCardColors((prevColors) => ({
+																							...prevColors,
+																							subTextColor: color
+																						}))}
+																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																					></Button>
+																				))}
+																			</div>
+																			<div className={"flex w-full relative"}>
+																				<Input
+																					type={"color"}
+																					id={"subtext-color"}
+																					name={"subtext-color"}
+																					value={cardColors.subTextColor}
+																					onChange={handleSubTextColorChange}
+																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																				></Input>
+																				<div
+																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					style={{
+																						backgroundColor: cardColors.subTextColor
+																					}}
+																				><Pipette className={"text-white w-4 h-4"}/></div>
+																			</div>
 																		</div>
 																	</article>
 																</section>
-																<div className="flex sm:flex-col flex-row items-center gap-4 mt-4 sm:mt-6 w-full">
+																<div className="flex flex-col sm:flex-row items-center gap-4 mt-4 sm:mt-6 w-full">
 																	<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
 																		Image</Button>
 																	<Button className={"w-full"}
