@@ -69,7 +69,6 @@ export default function UserProfilePage() {
 	// EDIT USER PROFILE
 	const [editUserInfo, setEditUserInfo] = useState<User | null>(null);
 	
-	// const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	
 	// FETCH USER INFO

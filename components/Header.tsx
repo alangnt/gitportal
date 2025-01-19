@@ -18,8 +18,6 @@ import {
 	DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
 
 import {signIn, signOut, useSession} from "next-auth/react";
 
@@ -47,7 +45,6 @@ export default function Header() {
 				</Link>
 			</div>
 			
-			{/* NAVIGATION MENU */}
 			<NavigationMenu>
 				<NavigationMenuList>
 					<p>{session?.user?.id}</p>
@@ -110,12 +107,10 @@ export default function Header() {
 											<span>Sign In</span>
 										</Button>
 										
-										<Button variant={"outline"} className={"font-semibold w-full hidden"}>
-											{/*<Github/>*/}
-											Google
-										</Button>
+										{/* TODO: add Google connexion later */}
 									</div>
 									
+									{/* TODO: add manual connexion later
 									<div className="relative w-full hidden">
 										<div className="absolute inset-0 flex items-center">
 											<span className="w-full border-t"/>
@@ -127,7 +122,7 @@ export default function Header() {
 										</div>
 									</div>
 									
-									<form className="grid flex-1 gap-4 hidden">
+									<form className="grid flex-1 gap-4">
 										<div>
 											<Label htmlFor={"email"} className={"font-semibold"}>Email</Label>
 											<Input type={"email"} placeholder={"jane.doe@example.com"}></Input>
@@ -140,6 +135,7 @@ export default function Header() {
 											Create account
 										</Button>
 									</form>
+									 */}
 								</div>
 							</DialogContent>
 						</Dialog>
