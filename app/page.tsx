@@ -183,11 +183,7 @@ export default function Home() {
 			fetchUserProfile();
 		}
 		
-		const timeout = setTimeout(() => {
-			fetchProjects();
-		}, 300); // Add debounce to reduce excessive fetch calls
-		
-		return () => clearTimeout(timeout);
+		fetchProjects();
 	}, [status, searchQuery]);
 	
 	if (loading) return <div>Loading...</div>;
@@ -205,7 +201,7 @@ export default function Home() {
 						placeholder={"Find an open source project now..."}
 						className={"w-full shadow"}
 					/>
-					<Button className={'absolute right-0'} onClick={() => setSearchQuery('')} variant={'ghost'}><X /></Button>
+					<Button className={'absolute right-0'} onClick={() => setSearchQuery('')} variant={'ghost'}><X/></Button>
 				</section>
 				
 				{projects && projects.length > 0 ? (
