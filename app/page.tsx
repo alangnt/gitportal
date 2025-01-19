@@ -40,10 +40,19 @@ export default function Home() {
 	const [loading, setLoading] = useState<boolean>(true);
 	
 	// PROJECTS
-	const [projects, setProjects] = useState([]);
+	const [projects, setProjects] = useState<Project[]>([]);
+	const [displayedProjects, setDisplayedProjects] = useState<Project[]>([]);
 	
 	// SEARCHBAR
 	const [searchQuery, setSearchQuery] = useState("");
+	
+	// PAGINATION
+	const [projectsToShow, setProjectsToShow] = useState(12);
+	
+	// SHOWMORE BUTTON
+	const handleShowMore = () => {
+		setProjectsToShow(prev => prev + 12); // Show 9 more projects
+	};
 	
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchQuery(e.target.value);
@@ -64,6 +73,8 @@ export default function Home() {
 			} else {
 				setProjects(data.data);
 			}
+			
+			setDisplayedProjects(data.data.slice(0, projectsToShow));
 			
 			setLoading(false);
 		} catch (error) {
@@ -184,7 +195,7 @@ export default function Home() {
 		}
 		
 		fetchProjects();
-	}, [status, searchQuery]);
+	}, [status, searchQuery, projectsToShow]);
 	
 	if (loading) return <div>Loading...</div>;
 	
@@ -192,7 +203,7 @@ export default function Home() {
 		<>
 			<Header/>
 			
-			<main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 mt-4"}>
+			<main className={"flex flex-col gap-4 grow w-full md:max-w-[1280px] px-4 max-lg:px-6 my-4"}>
 				<section className={"flex items-center w-full relative"}>
 					<Input
 						type="text"
@@ -205,12 +216,12 @@ export default function Home() {
 				</section>
 				
 				{projects && projects.length > 0 ? (
-					<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
-						{projects.map((project: Project) => (
+					<section className={"flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
+						{displayedProjects.map((project: Project) => (
 							<Dialog key={project._id}>
 								<DialogTrigger asChild>
 									<Card
-										className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}
+										className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-fit"}
 										key={project._id}>
 										<CardHeader>
 											<CardTitle className="flex items-center justify-between">
@@ -259,20 +270,27 @@ export default function Home() {
 											<Badge className={"w-fit"}>{project.language}</Badge>
 										</CardHeader>
 										<CardContent>
-											<p className="text-sm text-gray-500 md:truncate">{project.description}</p>
+											<p
+												className="text-sm text-gray-500 truncate">{project.description ? project.description : "No description"}</p>
 										</CardContent>
 										<CardFooter className="flex justify-between text-sm text-gray-500">
-											<div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1">
-                          <Star className="h-4 w-4"/>
-	                        {project.stars}
-                        </span>
-												<span className="flex items-center gap-1">
-                            <GitFork className="h-4 w-4"/>
-													{project.forks}
-                        </span>
+											<div className={"flex flex-col sm:flex-row justify-between gap-2 w-full"}>
+												<div className="flex items-center gap-4">
+                              <span className="flex items-center gap-1">
+                                <Star className="h-4 w-4"/>
+	                              {project.stars}
+                              </span>
+													<span className="flex items-center gap-1">
+                                <GitFork className="h-4 w-4"/>
+														{project.forks}
+                              </span>
+													<span className="flex items-center gap-1">
+                                <Heart className="h-4 w-4"/>
+														{project.totalLikes}
+                              </span>
+												</div>
+												<div>Updated: {project.updatedAt}</div>
 											</div>
-											<div>Updated: {project.updatedAt}</div>
 										</CardFooter>
 									</Card>
 								</DialogTrigger>
@@ -342,6 +360,12 @@ export default function Home() {
 					</section>
 				) : (
 					<div>No projects found</div>
+				)}
+				
+				{projects.length > 12 && displayedProjects.length < projects.length && (
+					<Button onClick={handleShowMore} className="flex place-self-center mt-4 w-fit">
+						Show More
+					</Button>
 				)}
 			</main>
 		</>

@@ -19,6 +19,7 @@ import {Button} from "@/components/ui/button";
 
 // LUCIDE
 import {
+	ChevronDown,
 	ExternalLink,
 	GitFork,
 	Github,
@@ -108,6 +109,15 @@ export default function UserProfilePage() {
 	const [projects, setProjects] = useState([]);
 	const [contributedProjects, setContributedProjects] = useState([]);
 	const [selectedProject, setSelectedProject] = useState<Project>();
+	
+	const [showMoreState, setShowMoreState] = useState<Record<string, boolean>>({});
+	
+	const handleToggleShowMore = (projectId: string) => {
+		setShowMoreState(prevState => ({
+			...prevState,
+			[projectId]: !prevState[projectId], // Toggle the showMore state for the specific project
+		}));
+	};
 	
 	const [totalStars, setTotalStars] = useState(0);
 	const [totalForks, setTotalForks] = useState(0);
@@ -790,10 +800,10 @@ export default function UserProfilePage() {
 							</div>
 							<TabsContent value="created">
 								{projects && projects.length > 0 ? (
-									<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+									<section className={"flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
 										{projects.map((project: Project) => (
 											<Card
-												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-46"}
+												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-fit"}
 												key={project._id}
 											>
 												<CardHeader>
@@ -874,8 +884,28 @@ export default function UserProfilePage() {
 													<Badge
 														className={"w-fit"}>{project.language ? project.language : "No particular language"}</Badge>
 												</CardHeader>
-												<CardContent>
-													<p className="text-sm text-gray-500 md:truncate">{project.description}</p>
+												<CardContent className={"flex flex-col gap-1"}>
+													<p
+														className="text-sm text-gray-500"
+														style={{
+															overflow:
+																showMoreState[project._id] ? "" : "hidden",
+															textOverflow:
+																showMoreState[project._id] ? "" : "ellipsis",
+															whiteSpace:
+																showMoreState[project._id] ? "" : "nowrap",
+														}}
+													>{project.description ? project.description : "No description"}</p>
+													<ChevronDown
+														className={"flex place-self-center w-6 h-6 hover:bg-accent rounded-md p-1 transition-all duration-150"}
+														onClick={() => handleToggleShowMore(project._id)}
+														style={{
+															transform:
+																showMoreState[project._id] ? "rotate(180deg)" : "",
+															opacity:
+																project.description ? "1" : "0"
+														}}
+													/>
 												</CardContent>
 												<CardFooter className="flex flex-col gap-4 text-sm text-gray-500 w-full">
 													<div className={"flex flex-col sm:flex-row justify-between gap-2 w-full"}>
