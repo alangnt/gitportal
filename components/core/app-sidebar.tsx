@@ -16,30 +16,31 @@ import {
 import {useSession} from "next-auth/react";
 import Link from "next/link";
 
-const authenticatedItems = [
-	{
-		title: "Saved",
-		url: "/bookmark",
-		icon: Bookmark
-	},
-]
-
 // Menu items.
 const items = [
 	{
 		title: "Home",
 		url: "/",
 		icon: Home,
+		authenticated: false
+	},
+	{
+		title: "Saved",
+		url: "/bookmark",
+		icon: Bookmark,
+		authenticated: true
 	},
 	{
 		title: "Settings",
 		url: "/settings",
 		icon: Settings,
+		authenticated: false
 	},
 	{
 		title: "About Us",
 		url: "/about-us",
 		icon: Info,
+		authenticated: false
 	},
 ]
 
@@ -58,9 +59,22 @@ export function AppSidebar() {
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{status === "authenticated" ? (
+							{items.map((item) => (
 								<>
-									{authenticatedItems.map((item) => (
+									{item.authenticated ? (
+										<>
+											{status === "authenticated" && (
+												<SidebarMenuItem key={item.title}>
+													<SidebarMenuButton asChild>
+														<Link href={item.url}>
+															<item.icon/>
+															<span>{item.title}</span>
+														</Link>
+													</SidebarMenuButton>
+												</SidebarMenuItem>
+											)}
+										</>
+									) : (
 										<SidebarMenuItem key={item.title}>
 											<SidebarMenuButton asChild>
 												<Link href={item.url}>
@@ -69,18 +83,8 @@ export function AppSidebar() {
 												</Link>
 											</SidebarMenuButton>
 										</SidebarMenuItem>
-									))}
+									)}
 								</>
-							) : null}
-							{items.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
-										<Link href={item.url}>
-											<item.icon/>
-											<span>{item.title}</span>
-										</Link>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
 							))}
 						</SidebarMenu>
 					</SidebarGroupContent>
