@@ -751,6 +751,13 @@ export default function UserProfilePage() {
 											<Button
 												variant={"outline"}
 												className={"shadow"}
+												onClick={() => {
+													setAddProjectFormData({
+														title: "",
+														category: ""
+													});
+													setAddProjectError("")
+												}}
 											><Plus/></Button>
 										</DialogTrigger>
 										{userInfo && userInfo?.github ? (
@@ -783,7 +790,9 @@ export default function UserProfilePage() {
 																<Select
 																	onValueChange={(value) =>
 																		handleAddProjectInfoChange("category", value)
-																	}>
+																	}
+																	required
+																>
 																	<SelectTrigger className="w-[180px]">
 																		<SelectValue
 																			placeholder="Select a category"
