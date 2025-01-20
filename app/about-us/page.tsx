@@ -54,7 +54,7 @@ export default function AboutPage() {
 							<CardContent>
 								<p className="mb-4">
 									Hi there! I&apos;m Alan Geirnaert, the founder and lead developer of GitPortal. With over six months
-									of experience in software development and a passion for open-source, I created this platform to
+									of experience in development and a passion for open-source, I created this platform to
 									address the need for a centralized space where developers can showcase their contributions and connect
 									with others in the community.
 								</p>
@@ -82,7 +82,7 @@ export default function AboutPage() {
 											<span className="sr-only">LinkedIn</span>
 										</Button>
 									</Link>
-									<Link href="mailto:alan.geirnaert@icloud.com">
+									<Link href="mailto:contact@gitportal.org">
 										<Button variant="outline" size="icon">
 											<Mail className="h-4 w-4"/>
 											<span className="sr-only">Email</span>
