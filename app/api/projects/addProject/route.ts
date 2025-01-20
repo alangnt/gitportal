@@ -1,5 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import clientPromise from "@/lib/mongodb";
+import {Category} from "@/types/types";
 
 export async function POST(req: NextRequest) {
 	try {
@@ -7,7 +8,12 @@ export async function POST(req: NextRequest) {
 		const db = client.db("opensourcefinder");
 		const collection = db.collection("projects");
 		
-		const {_id, user, title}: { _id: string, user: string, title: string } = await req.json();
+		const {_id, user, title, category}: {
+			_id: string,
+			user: string,
+			title: string,
+			category: Category,
+		} = await req.json();
 		if (!user || !title) {
 			return NextResponse.json(
 				{message: "User and title are required"},
@@ -60,6 +66,7 @@ export async function POST(req: NextRequest) {
 		
 		const newProject = {
 			title: title,
+			category: category,
 			completeTitle: formattedProjectTitle,
 			description: data.description,
 			stars: data.stars,
@@ -67,6 +74,7 @@ export async function POST(req: NextRequest) {
 			language: data.language,
 			url: projectUrl,
 			user: _id,
+			user_github: user,
 			likes: [],
 			totalLikes: 0,
 			addedAt: new Date(),

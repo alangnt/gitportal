@@ -12,6 +12,15 @@ import {redirect} from 'next/navigation';
 import Header from "@/components/Header";
 
 // SHADCN
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs"
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -19,6 +28,7 @@ import {Button} from "@/components/ui/button";
 
 // LUCIDE
 import {
+	ChevronDown,
 	ExternalLink,
 	GitFork,
 	Github,
@@ -27,6 +37,7 @@ import {
 	Heart,
 	Mail,
 	MapPin,
+	Pipette,
 	Plus,
 	RefreshCcw,
 	Star,
@@ -57,7 +68,8 @@ import {useQRCode} from "next-qrcode";
 import {toPng} from 'html-to-image'
 
 // Types
-import {Project, User} from "@/types/types";
+import {Category, Project, User} from "@/types/types";
+import {categoryPipe} from "@/utils/category";
 
 export default function UserProfilePage() {
 	const {data: session, status} = useSession();
@@ -69,7 +81,6 @@ export default function UserProfilePage() {
 	// EDIT USER PROFILE
 	const [editUserInfo, setEditUserInfo] = useState<User | null>(null);
 	
-	// const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	
 	// FETCH USER INFO
@@ -109,6 +120,15 @@ export default function UserProfilePage() {
 	const [contributedProjects, setContributedProjects] = useState([]);
 	const [selectedProject, setSelectedProject] = useState<Project>();
 	
+	const [showMoreState, setShowMoreState] = useState<Record<string, boolean>>({});
+	
+	const handleToggleShowMore = (projectId: string) => {
+		setShowMoreState(prevState => ({
+			...prevState,
+			[projectId]: !prevState[projectId], // Toggle the showMore state for the specific project
+		}));
+	};
+	
 	const [totalStars, setTotalStars] = useState(0);
 	const [totalForks, setTotalForks] = useState(0);
 	
@@ -147,7 +167,8 @@ export default function UserProfilePage() {
 	};
 	
 	const [addProjectFormData, setAddProjectFormData] = useState({
-		title: ''
+		title: '',
+		category: ''
 	})
 	
 	const [editProjectFormData, setEditProjectFormData] = useState({
@@ -164,12 +185,9 @@ export default function UserProfilePage() {
 		github: '',
 	})
 	
-	const handleAddProjectInfoChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) => {
-		const {name, value} = e.target
-		setAddProjectFormData((prev) => ({...prev, [name]: value}))
-	}
+	const handleAddProjectInfoChange = (field: string, value: string) => {
+		setAddProjectFormData((prev) => ({...prev, [field]: value}));
+	};
 	
 	const handleEditProjectInfoChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -413,21 +431,40 @@ export default function UserProfilePage() {
 		window.open(twitterUrl, '_blank')
 	}
 	
-	const [selectedBgColor, setSelectedBgColor] = useState<string | null>(null);
-	const [selectedTextColor, setSelectedTextColor] = useState<string | null>(null);
+	const [cardColors, setCardColors] = useState({
+		bgColor: "",
+		textColor: "",
+		subTextColor: "",
+	})
 	
-	const colorPalette = [
-		"#000000", // Black
-		"#FFFFFF", // White
-		"#FF5733", // Orange
-		"#FFC300", // Yellow
-		"#8E44AD", // Purple
-		"#C70039", // Red
-		"#34495E", // Gray
-		"#2ECC71", // Emerald
-		"#1ABC9C", // Aqua
-		"#F39C12", // Orange-Yellow
+	const sampleColors = [
+		"#121212",
+		"#1a1a2e",
+		"#737373",
+		"#f5deb3",
+		"#f9f9f9"
 	]
+	
+	const handleBgColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setCardColors((prevColors) => ({
+			...prevColors,
+			bgColor: event.target.value,
+		}));
+	};
+	
+	const handleTextColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setCardColors((prevColors) => ({
+			...prevColors,
+			textColor: event.target.value,
+		}));
+	};
+	
+	const handleSubTextColorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setCardColors((prevColors) => ({
+			...prevColors,
+			subTextColor: event.target.value,
+		}));
+	};
 	
 	useEffect(() => {
 		if (status === "unauthenticated") {
@@ -714,6 +751,13 @@ export default function UserProfilePage() {
 											<Button
 												variant={"outline"}
 												className={"shadow"}
+												onClick={() => {
+													setAddProjectFormData({
+														title: "",
+														category: ""
+													});
+													setAddProjectError("")
+												}}
 											><Plus/></Button>
 										</DialogTrigger>
 										{userInfo && userInfo?.github ? (
@@ -735,9 +779,47 @@ export default function UserProfilePage() {
 																	id="title"
 																	name="title"
 																	value={addProjectFormData.title}
-																	onChange={handleAddProjectInfoChange}
+																	onChange={(e) =>
+																		handleAddProjectInfoChange(e.target.name, e.target.value)
+																	}
 																	className="col-span-3"
 																/>
+																<Label htmlFor="category" className="text-right">
+																	Category
+																</Label>
+																<Select
+																	onValueChange={(value) =>
+																		handleAddProjectInfoChange("category", value)
+																	}
+																	required
+																>
+																	<SelectTrigger className="w-[180px]">
+																		<SelectValue
+																			placeholder="Select a category"
+																		/>
+																	</SelectTrigger>
+																	<SelectContent>
+																		<SelectGroup>
+																			<SelectLabel>Categories</SelectLabel>
+																			
+																			<SelectItem value="frontend">Frontend</SelectItem>
+																			<SelectItem value="backend">Backend</SelectItem>
+																			<SelectItem value="fullstack">Full Stack</SelectItem>
+																			<SelectItem value="android">Android</SelectItem>
+																			<SelectItem value="apple">Apple</SelectItem>
+																			<SelectItem value="ai">AI</SelectItem>
+																			<SelectItem value="machineLearning">Machine Learning</SelectItem>
+																			<SelectItem value="dataAnalysis">Data Analysis</SelectItem>
+																			<SelectItem value="twoD">2D Games</SelectItem>
+																			<SelectItem value="threeD">3D Games</SelectItem>
+																			<SelectItem value="extension">Browser Extension</SelectItem>
+																			<SelectItem value="database">Database Management</SelectItem>
+																			<SelectItem value="orm">ORM</SelectItem>
+																			<SelectItem value="api">API Development</SelectItem>
+																			<SelectItem value="ui">UI Libraries</SelectItem>
+																		</SelectGroup>
+																	</SelectContent>
+																</Select>
 															</div>
 														</div>
 														<DialogFooter>
@@ -771,10 +853,10 @@ export default function UserProfilePage() {
 							</div>
 							<TabsContent value="created">
 								{projects && projects.length > 0 ? (
-									<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
+									<section className={"flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
 										{projects.map((project: Project) => (
 											<Card
-												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-46"}
+												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-fit"}
 												key={project._id}
 											>
 												<CardHeader>
@@ -852,11 +934,36 @@ export default function UserProfilePage() {
 															</Link>
 														</div>
 													</CardTitle>
-													<Badge
-														className={"w-fit"}>{project.language ? project.language : "No particular language"}</Badge>
+													<div className={"flex gap-2"}>
+														<Badge className={"w-fit"}>
+															{project.language ? project.language : "None"}
+														</Badge>
+														<Badge className={"w-fit"}>{categoryPipe(project.category as keyof Category)}</Badge>
+													</div>
+												
 												</CardHeader>
-												<CardContent>
-													<p className="text-sm text-gray-500 md:truncate">{project.description}</p>
+												<CardContent className={"flex flex-col gap-1"}>
+													<p
+														className="text-sm text-gray-500"
+														style={{
+															overflow:
+																showMoreState[project._id] ? "" : "hidden",
+															textOverflow:
+																showMoreState[project._id] ? "" : "ellipsis",
+															whiteSpace:
+																showMoreState[project._id] ? "" : "nowrap",
+														}}
+													>{project.description ? project.description : "No description"}</p>
+													<ChevronDown
+														className={"flex place-self-center w-6 h-6 hover:bg-accent rounded-md p-1 transition-all duration-150"}
+														onClick={() => handleToggleShowMore(project._id)}
+														style={{
+															transform:
+																showMoreState[project._id] ? "rotate(180deg)" : "",
+															opacity:
+																project.description ? "1" : "0"
+														}}
+													/>
 												</CardContent>
 												<CardFooter className="flex flex-col gap-4 text-sm text-gray-500 w-full">
 													<div className={"flex flex-col sm:flex-row justify-between gap-2 w-full"}>
@@ -880,27 +987,36 @@ export default function UserProfilePage() {
 														<DialogTrigger asChild>
 															<Button
 																onClick={() => {
-																	setSelectedBgColor("#FFFFFF");
-																	setSelectedTextColor("#000000")
+																	setCardColors({
+																		bgColor: "#FFFFFF",
+																		textColor: "#000000",
+																		subTextColor: "#737373"
+																	});
 																}}
 																className={"w-full"}
 															>Share project</Button>
 														</DialogTrigger>
 														<DialogContent className={"flex flex-col items-center w-full max-h-[80vh] overflow-auto"}>
-															<DialogTitle className={"flex flex-wrap mt-4"}>You can share your project card
+															<DialogTitle className={"flex flex-wrap mt-4 mb-6 sm:mb-0"}>You can share your project
+																card
 																everywhere</DialogTitle>
 															<Card
 																ref={cardRef}
 																className={"w-fit sm:w-full"}
 																style={{
-																	backgroundColor: selectedBgColor || "black",
-																	color: selectedTextColor || "white"
+																	backgroundColor: cardColors.bgColor,
+																	color: cardColors.textColor
 																}}>
 																<CardHeader>
 																	<CardTitle
 																		className={"text-center sm:text-left text-2xl"}>{project.completeTitle}</CardTitle>
 																	<CardDescription
-																		className={"text-center sm:text-left"}>{userInfo?.github}/{project.title}</CardDescription>
+																		className={"text-center sm:text-left"}
+																		style={{
+																			color: cardColors.subTextColor
+																		}}>
+																		{userInfo?.github}/{project.title}
+																	</CardDescription>
 																</CardHeader>
 																<CardContent className={"flex flex-col sm:flex-row gap-4"}>
 																	<div className={"rounded-md w-full h-full overflow-hidden"}>
@@ -922,36 +1038,118 @@ export default function UserProfilePage() {
 																	</div>
 																</CardContent>
 															</Card>
-															<section className={"flex flex-col gap-2 w-full"}>
-																<div className={"flex flex-col gap-2"}>
-																	<h3>Edit the background color</h3>
-																	<div className={"grid grid-cols-4 sm:flex gap-2 w-full mb-4"}>
-																		{colorPalette.map((color: string) => (
-																			<Button
-																				key={color}
-																				className={"w-full shadow"}
-																				style={{
-																					backgroundColor: color
-																				}}
-																				onClick={() => setSelectedBgColor(color)}
-																			></Button>
-																		))}
-																	</div>
-																	<h3>Edit the text color</h3>
-																	<div className={"grid grid-cols-4 sm:flex gap-2 w-full"}>
-																		{colorPalette.map((color: string) => (
-																			<Button
-																				key={color}
-																				className={"w-full shadow"}
-																				style={{
-																					backgroundColor: color
-																				}}
-																				onClick={() => setSelectedTextColor(color)}
-																			></Button>
-																		))}
-																	</div>
-																</div>
-																<div className="flex flex-col sm:flex-row items-center gap-4 mt-4 w-full">
+															<section className={"flex flex-col gap-2 sm:gap-8 mt-6 w-full"}>
+																<section className={"flex flex-col gap-2 w-full"}>
+																	<article className={"flex flex-col gap-2"}>
+																		<Label htmlFor={"bg-color"}>Edit the background color</Label>
+																		<div className={"flex gap-2 w-full mb-4"}>
+																			<div className={"flex flex-wrap sm:flex-nowrap gap-2"}>
+																				{sampleColors.map((color: string) => (
+																					<Button
+																						key={color}
+																						style={{
+																							backgroundColor: color,
+																						}}
+																						onClick={() => setCardColors((prevColors) => ({
+																							...prevColors,
+																							bgColor: color
+																						}))}
+																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																					></Button>
+																				))}
+																			</div>
+																			<div className={"flex w-full relative"}>
+																				<Input
+																					type={"color"}
+																					id={"bg-color"}
+																					name={"bg-color"}
+																					value={cardColors.bgColor}
+																					onChange={handleBgColorChange}
+																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																				></Input>
+																				<div
+																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					style={{
+																						backgroundColor: cardColors.bgColor
+																					}}
+																				><Pipette className={"w-4 h-4"}/></div>
+																			</div>
+																		</div>
+																	</article>
+																	<article className={"flex flex-col gap-2"}>
+																		<Label htmlFor={"text-color"}>Edit the text color</Label>
+																		<div className={"flex gap-2 w-full mb-4"}>
+																			<div className={"flex flex-wrap sm:flex-nowrap gap-2"}>
+																				{sampleColors.map((color: string) => (
+																					<Button
+																						key={color}
+																						style={{
+																							backgroundColor: color,
+																						}}
+																						onClick={() => setCardColors((prevColors) => ({
+																							...prevColors,
+																							textColor: color
+																						}))}
+																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																					></Button>
+																				))}
+																			</div>
+																			<div className={"flex w-full relative"}>
+																				<Input
+																					type={"color"}
+																					id={"text-color"}
+																					name={"text-color"}
+																					value={cardColors.textColor}
+																					onChange={handleTextColorChange}
+																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																				></Input>
+																				<div
+																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					style={{
+																						backgroundColor: cardColors.textColor
+																					}}
+																				><Pipette className={"text-white w-4 h-4"}/></div>
+																			</div>
+																		</div>
+																	</article>
+																	<article className={"flex flex-col gap-2"}>
+																		<Label htmlFor={"subtext-color"}>Edit the sub-text color</Label>
+																		<div className={"flex gap-2 w-full"}>
+																			<div className={"flex flex-wrap sm:flex-nowrap gap-2"}>
+																				{sampleColors.map((color: string) => (
+																					<Button
+																						key={color}
+																						style={{
+																							backgroundColor: color,
+																						}}
+																						onClick={() => setCardColors((prevColors) => ({
+																							...prevColors,
+																							subTextColor: color
+																						}))}
+																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																					></Button>
+																				))}
+																			</div>
+																			<div className={"flex w-full relative"}>
+																				<Input
+																					type={"color"}
+																					id={"subtext-color"}
+																					name={"subtext-color"}
+																					value={cardColors.subTextColor}
+																					onChange={handleSubTextColorChange}
+																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
+																				></Input>
+																				<div
+																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					style={{
+																						backgroundColor: cardColors.subTextColor
+																					}}
+																				><Pipette className={"text-white w-4 h-4"}/></div>
+																			</div>
+																		</div>
+																	</article>
+																</section>
+																<div className="flex flex-col sm:flex-row items-center gap-4 mt-4 sm:mt-6 w-full">
 																	<Button className={"w-full"} onClick={() => saveAsImage(project.title)}>Save as
 																		Image</Button>
 																	<Button className={"w-full"}

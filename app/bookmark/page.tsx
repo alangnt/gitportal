@@ -300,7 +300,10 @@ export default function BookmarkPage() {
 								))}
 							</section>
 						) : (
-							<div>No projects bookmarked</div>
+							<>
+								<div>No projects bookmarked</div>
+								<Link href={"/"} prefetch={false}><Button className={"w-fit"}>Go find some</Button></Link>
+							</>
 						)}
 					</main>
 				</>

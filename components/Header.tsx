@@ -18,8 +18,6 @@ import {
 	DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
 
 import {signIn, signOut, useSession} from "next-auth/react";
 
@@ -36,10 +34,9 @@ export default function Header() {
 	return (
 		<header className={"flex justify-between border-b-[1px] w-full px-2 max-lg:pr-6"}>
 			<div className={"flex items-center"}>
-				{status === "authenticated" && (
-					<SidebarTrigger/>
-				)}
-				<Link href={'/'} className={"flex items-center gap-2 p-1 pr-4 m-1 hover:bg-black hover:text-white hover:rounded-md duration-150 transition-all cursor-pointer"}>
+				<SidebarTrigger/>
+				<Link href={'/'}
+				      className={"flex items-center gap-2 p-1 pr-4 m-1 hover:bg-black hover:text-white hover:rounded-md duration-150 transition-all cursor-pointer"}>
 					<div className={'rounded-md overflow-hidden ml-2'}>
 						<Image src={'/icons/icon.png'} alt={'Icon logo'} height={'30'} width={'30'}/>
 					</div>
@@ -48,11 +45,17 @@ export default function Header() {
 				</Link>
 			</div>
 			
-			{/* NAVIGATION MENU */}
 			<NavigationMenu>
 				<NavigationMenuList>
-					<p>{session?.user?.id}</p>
-					
+					<Link
+						href="https://www.producthunt.com/posts/gitportal?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gitportal"
+						target="_blank">
+						<Image
+							src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=795574&theme=light&t=1737322305297"
+							alt="GitPortal - Your&#0032;Gateway&#0032;to&#0032;Open&#0032;Source&#0032;Collaboration | Product Hunt"
+							width="200"
+							height="40"/>
+					</Link>
 					{status === "authenticated" && (
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
@@ -111,12 +114,10 @@ export default function Header() {
 											<span>Sign In</span>
 										</Button>
 										
-										<Button variant={"outline"} className={"font-semibold w-full hidden"}>
-											{/*<Github/>*/}
-											Google
-										</Button>
+										{/* TODO: add Google connexion later */}
 									</div>
 									
+									{/* TODO: add manual connexion later
 									<div className="relative w-full hidden">
 										<div className="absolute inset-0 flex items-center">
 											<span className="w-full border-t"/>
@@ -128,7 +129,7 @@ export default function Header() {
 										</div>
 									</div>
 									
-									<form className="grid flex-1 gap-4 hidden">
+									<form className="grid flex-1 gap-4">
 										<div>
 											<Label htmlFor={"email"} className={"font-semibold"}>Email</Label>
 											<Input type={"email"} placeholder={"jane.doe@example.com"}></Input>
@@ -141,6 +142,7 @@ export default function Header() {
 											Create account
 										</Button>
 									</form>
+									 */}
 								</div>
 							</DialogContent>
 						</Dialog>
