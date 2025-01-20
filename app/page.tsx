@@ -381,7 +381,7 @@ export default function Home() {
 										<DialogHeader>
 											<div className={"flex items-center gap-1"}>
 												<DialogTitle className={"text-2xl"}>{project.title}</DialogTitle>
-												{project.user !== userInfo?._id ? (
+												{status === "authenticated" && project.user !== userInfo?._id ? (
 													<Button
 														variant={"ghost"}
 														onClick={(event) => {
