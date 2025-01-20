@@ -1,4 +1,4 @@
-import {Github, Linkedin, Mail, Twitter} from 'lucide-react'
+import {Coffee, Github, Linkedin, Mail, TrelloIcon, Twitter} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -117,6 +117,51 @@ export default function AboutPage() {
 									We&apos;re committed to continuously improving GitPortal to meet the evolving needs of
 									developers and the open-source community.
 								</p>
+							</CardContent>
+						</Card>
+					</section>
+					
+					<section className="mb-12">
+						<h2 className="text-2xl font-semibold mb-4">Contribute</h2>
+						<Card>
+							<CardContent className="pt-6">
+								<p className="mb-6">
+									GitPortal is a labor of love, and we&apos;re always looking for support to help us grow and
+									improve. If you believe in our mission and want to contribute to our project, you can do so in the
+									following ways:
+								</p>
+								<div className="grid gap-4 md:grid-cols-2">
+									<div>
+										<h3 className="text-lg font-semibold mb-2">Support our Patreon</h3>
+										<p className="mb-4">Help us reach our funding goals and bring new features to life.</p>
+										<Link
+											href="https://www.patreon.com/c/gitportal"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											<Button className="w-full">
+												<TrelloIcon className="mr-2 h-4 w-4"/>
+												Back us on Patreon
+											</Button>
+										</Link>
+									</div>
+									<div>
+										<h3 className="text-lg font-semibold mb-2">Buy us a coffee</h3>
+										<p className="mb-4">
+											Your small contribution can make a big difference in keeping us caffeinated and coding.
+										</p>
+										<Link
+											href="https://www.buymeacoffee.com/gitportal"
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											<Button variant="outline" className="w-full">
+												<Coffee className="mr-2 h-4 w-4"/>
+												Buy us a coffee
+											</Button>
+										</Link>
+									</div>
+								</div>
 							</CardContent>
 						</Card>
 					</section>
