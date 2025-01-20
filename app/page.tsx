@@ -432,16 +432,17 @@ export default function Home() {
 												<div>Updated: {project.updatedAt}</div>
 											</div>
 										</DialogFooter>
-										<Button>
-											<Link
-												href={project.url}
-												target="_blank"
-												rel="noopener noreferrer"
-												className="flex items-center gap-2"
-											>Visit the project
+										<Link
+											href={project.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center gap-2"
+										>
+											<Button className="w-full">
+												Visit the project
 												<ExternalLink className="h-4 w-4"/>
-											</Link>
-										</Button>
+											</Button>
+										</Link>
 									</DialogContent>
 								</Dialog>
 							))}
