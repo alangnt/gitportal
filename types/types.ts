@@ -32,6 +32,7 @@ export interface Project {
 	likes: string[];
 	totalLikes: number;
 	contributions: string[];
+	addedAt: Date;
 }
 
 export type Category = {

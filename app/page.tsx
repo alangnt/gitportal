@@ -35,6 +35,15 @@ import Header from "@/components/Header";
 // Types
 import {Category, Project, User} from "@/types/types";
 import {categoryPipe} from "@/utils/category";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectLabel,
+	SelectTrigger,
+	SelectValue
+} from "@/components/ui/select";
 
 // UTILS
 
@@ -66,6 +75,33 @@ export default function Home() {
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchQuery(e.target.value);
 	}
+	
+	const handleSortBy = (value: string) => {
+		const sortedProjects = [...displayedProjects]; // Create a new array to avoid mutation
+		switch (value) {
+			case "new":
+				sortedProjects.sort(
+					(a: Project, b: Project) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+				);
+				break;
+			case "old":
+				sortedProjects.sort(
+					(a: Project, b: Project) => new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime()
+				);
+				break;
+			case "liked":
+				sortedProjects.sort(
+					(a: Project, b: Project) => b.likes.length - a.likes.length
+				);
+				break;
+			default:
+				sortedProjects.sort(
+					(a: Project, b: Project) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+				);
+		}
+		
+		setDisplayedProjects(sortedProjects.slice(0, projectsToShow));
+	};
 	
 	// FETCH PROJECTS
 	const fetchProjects = async () => {
@@ -204,6 +240,7 @@ export default function Home() {
 	
 	useEffect(() => {
 		fetchProjects();
+		handleSortBy("new");
 	}, []);
 	
 	useEffect(() => {
@@ -249,6 +286,7 @@ export default function Home() {
 						<Button className={'absolute right-0'} onClick={() => setSearchQuery('')} variant={'ghost'}><X/></Button>
 					</section>
 					
+					{/* TODO: Add an accordion in case there's too many filters */}
 					<Card>
 						<CardHeader>
 							<CardTitle>Choose a filter below</CardTitle>
@@ -256,7 +294,7 @@ export default function Home() {
 						<CardContent className={"flex flex-col gap-4"}>
 							<div className={"flex flex-col gap-4"}>
 								<Label>Filter by language</Label>
-								<div className={"flex gap-2"}>
+								<div className={"flex flex-wrap gap-2"}>
 									{[...new Set(projects.map((project: Project) => project.language))].map((language: string) => (
 										<Badge
 											key={language}
@@ -274,7 +312,7 @@ export default function Home() {
 							</div>
 							<div className={"flex flex-col gap-2"}>
 								<Label>Filter by category</Label>
-								<div className={"flex gap-2"}>
+								<div className={"flex flex-wrap gap-2"}>
 									{[...new Set(projects.map((project: Project) => project.category))].map((category) => (
 										<Badge
 											key={category}
@@ -292,6 +330,22 @@ export default function Home() {
 							</div>
 						</CardContent>
 					</Card>
+					
+					<section className={"flex justify-center sm:justify-start"}>
+						<Select onValueChange={(value) => handleSortBy(value)}>
+							<SelectTrigger className="w-full sm:w-[100px]">
+								<SelectValue placeholder={'Sort by'} />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectGroup className="w-[120px]">
+									<SelectLabel>Sort by</SelectLabel>
+									<SelectItem value="new">Newer first</SelectItem>
+									<SelectItem value="old">Older first</SelectItem>
+									<SelectItem value="liked">Most liked</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+					</section>
 					
 					{projects && projects.length > 0 ? (
 						<section className={"flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"}>
