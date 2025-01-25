@@ -123,7 +123,8 @@ export default function AboutPage() {
 					
 					<section className="mb-12">
 						<h2 className="text-2xl font-semibold mb-4">Contribute</h2>
-						<Card>
+						<Card
+							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
 							<CardContent className="pt-6">
 								<p className="mb-6">
 									GitPortal is a labor of love, and we&apos;re always looking for support to help us grow and
