@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from "next/server";
 import clientPromise from "@/lib/mongodb";
-import {Category} from "@/types/types";
+import { Category } from "@/types/types";
 
 export async function POST(req: NextRequest) {
 	try {
@@ -8,19 +8,20 @@ export async function POST(req: NextRequest) {
 		const db = client.db("opensourcefinder");
 		const collection = db.collection("projects");
 		
-		const {_id, user, title, category}: {
+		const {_id, user, title, category, categories}: {
 			_id: string,
 			user: string,
 			title: string,
 			category: Category,
+			categories: string[]
 		} = await req.json();
-		if (!user || !title) {
+		if (!_id || !user || !title || !categories || !categories.length) {
 			return NextResponse.json(
 				{message: "User and title are required"},
 				{status: 400}
 			);
 		}
-		
+
 		const baseUrl =
 			process.env.NEXT_PUBLIC_BASE_URL;
 		const apiUrl = `${baseUrl}/api/github?owner=${user}&repo=${title}`;
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest) {
 		
 		const newProject = {
 			title: title,
-			category: category,
+			categories: [...categories, category],
 			completeTitle: formattedProjectTitle,
 			description: data.description,
 			stars: data.stars,
@@ -90,11 +91,13 @@ export async function POST(req: NextRequest) {
 		}
 		
 		const result = await collection.insertOne(newProject);
-		
-		return NextResponse.json(
-			{message: "User created successfully", documentId: result.insertedId},
-			{status: 201}
-		);
+
+		if (result) {
+			return NextResponse.json(
+				{message: data.description},
+				{status: 201}
+			);
+		}
 	} catch (error) {
 		console.error("Error adding project:", error);
 		return NextResponse.json(

@@ -1,7 +1,7 @@
 "use client"
 
 // REACT
-import {useEffect, useState} from "react"
+import React, {useEffect, useState} from "react"
 
 // NEXT
 import Link from "next/link";
@@ -33,8 +33,7 @@ import {Bookmark, ExternalLink, GitFork, Heart, Star, Trophy, X} from "lucide-re
 import Header from "@/components/Header";
 
 // Types
-import {Category, Project, User} from "@/types/types";
-import {categoryPipe} from "@/utils/category";
+import {Project, User} from "@/types/types";
 import {
 	Select,
 	SelectContent,
@@ -108,7 +107,7 @@ export default function Home() {
 		try {
 			const response = await fetch('/api/projects');
 			if (!response.ok) {
-				throw new Error('Failed to fetch projects');
+				console.error('Failed to fetch projects');
 			}
 			
 			const data = await response.json();
@@ -150,12 +149,12 @@ export default function Home() {
 	const fetchUserProfile = async () => {
 		try {
 			if (!session?.user?.email) {
-				throw new Error("User session is not available.");
+				console.error("User session is not available.");
 			}
 			
 			const response = await fetch('/api/users');
 			if (!response?.ok) {
-				throw new Error('Failed to fetch user infos');
+				console.error('Failed to fetch user infos');
 			}
 			
 			const data = await response.json();
@@ -164,7 +163,7 @@ export default function Home() {
 			);
 			
 			if (userInfos.length === 0) {
-				throw new Error("No user found with the given email.");
+				console.error("No user found with the given email.");
 			}
 			
 			const user = userInfos[0];
@@ -259,7 +258,7 @@ export default function Home() {
 		}
 		if (selectedCategory.length > 0) {
 			filteredProjects = projects.filter((project: Project) =>
-				project.category.includes(selectedCategory)
+				project.categories.includes(selectedCategory)
 			);
 		}
 		
@@ -313,18 +312,20 @@ export default function Home() {
 							<div className={"flex flex-col gap-2"}>
 								<Label>Filter by category</Label>
 								<div className={"flex flex-wrap gap-2"}>
-									{[...new Set(projects.map((project: Project) => project.category))].map((category) => (
+									{[...new Set(projects.flatMap((project: Project) => project.categories))].map((category) => (
 										<Badge
 											key={category}
 											className={"cursor-pointer hover:scale-105 duration-150 transition-all"}
 											onClick={() => {
-												setSelectedLanguage("")
-												setSelectedCategory(selectedCategory === category ? "" : category)
+												setSelectedLanguage("");
+												setSelectedCategory(selectedCategory === category ? "" : category);
 											}}
 											style={{
-												backgroundColor: selectedCategory === category ? "rgb(23, 23, 23, 0.7)" : "",
+												backgroundColor: selectedCategory === category ? "rgba(23, 23, 23, 0.7)" : "",
 											}}
-										>{categoryPipe(category as keyof Category)}</Badge>
+										>
+											{category}
+										</Badge>
 									))}
 								</div>
 							</div>
@@ -399,11 +400,15 @@ export default function Home() {
 														</Link>
 													</div>
 												</CardTitle>
-												<div className={"flex gap-2"}>
+												<div className={"flex gap-2 flex-wrap"}>
 													<Badge className={"w-fit"}>
 														{project.language ? project.language : "None"}
 													</Badge>
-													<Badge className={"w-fit"}>{categoryPipe(project.category as keyof Category)}</Badge>
+													{Array.isArray(project.categories) && project.categories.map((category: string, index: number) => (
+														<Badge key={index} className="w-fit">
+															{category}
+														</Badge>
+													))}
 												</div>
 											</CardHeader>
 											<CardContent>
@@ -463,11 +468,15 @@ export default function Home() {
 													</Button>
 												) : null}
 											</div>
-											<div className={"flex gap-2"}>
+											<div className={"flex gap-2 flex-wrap"}>
 												<Badge className={"w-fit"}>
 													{project.language ? project.language : "None"}
 												</Badge>
-												<Badge className={"w-fit"}>{categoryPipe(project.category as keyof Category)}</Badge>
+												{Array.isArray(project.categories) && project.categories.map((category: string, index: number) => (
+													<Badge key={index} className="w-fit">
+														{category}
+													</Badge>
+												))}
 											</div>
 										</DialogHeader>
 										<DialogDescription>{project.description}</DialogDescription>
