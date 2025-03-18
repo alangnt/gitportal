@@ -859,8 +859,8 @@ export default function UserProfilePage() {
 
 															{keywords.length > 0 && (
 																<section className={"flex flex-col gap-4"}>
-																	<h4>Would you like to add custom keywords ?</h4>
-																	<div className={"flex flex-wrap gap-2"}>
+																	<h4 className={'text-center'}>Would you like to add custom keywords ?</h4>
+																	<div className={"flex flex-wrap justify-center gap-2"}>
 																		{keywords.map((keyword: string, index: number) => (
 																			<Badge
 																				key={index}
