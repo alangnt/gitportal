@@ -305,9 +305,7 @@ export default function UserProfilePage() {
 		} catch (error) {
 			console.error('Request failed:', error);
 		} finally {
-			setTimeout(() => {
-				setAddProjectLoading(false);
-			}, 1000)
+			setAddProjectLoading(false);
 		}
 	}
 
