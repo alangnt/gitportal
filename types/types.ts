@@ -19,7 +19,7 @@ export interface User {
 export interface Project {
 	_id: string;
 	title: string;
-	category: string;
+	categories: string[];
 	completeTitle: string;
 	description: string;
 	stars: number;
@@ -35,20 +35,18 @@ export interface Project {
 	addedAt: Date;
 }
 
-export type Category = {
-	frontend: "Front End",
-	backend: "Back End",
-	fullstack: "Full Stack",
-	android: "Android",
-	apple: "Apple",
-	ai: "AI",
-	machineLearning: "Machine Learning",
-	dataAnalysis: "Data Analysis",
-	twoD: "2D Games",
-	threeD: "3D Games",
-	extension: "Browser Extension",
-	database: "Database Management",
-	orm: "ORM",
-	api: "API Development",
-	ui: "UI Libraries",
-}
+export type Category = "Front End"
+	| "Back End"
+	| "Full Stack"
+	| "Android"
+	| "Apple"
+	| "AI"
+	| "Machine Learning"
+	| "Data Analysis"
+	| "2D Games"
+	| "3D Games"
+	| "Browser Extension"
+	| "Database Extension"
+	| "ORM"
+	| "API Development"
+	| "UI Libraries"

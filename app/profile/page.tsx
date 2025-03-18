@@ -1,7 +1,7 @@
 "use client"
 
 // REACT
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 // NEXT
 // AUTH
@@ -68,8 +68,7 @@ import {useQRCode} from "next-qrcode";
 import {toPng} from 'html-to-image'
 
 // Types
-import {Category, Project, User} from "@/types/types";
-import {categoryPipe} from "@/utils/category";
+import {Project, User} from "@/types/types";
 
 export default function UserProfilePage() {
 	const {data: session, status} = useSession();
@@ -87,12 +86,12 @@ export default function UserProfilePage() {
 	const fetchUserProfile = async () => {
 		try {
 			if (!session?.user?.email) {
-				throw new Error("User session is not available.");
+				console.error("User session is not available.");
 			}
 			
 			const response = await fetch('/api/users');
 			if (!response?.ok) {
-				throw new Error('Failed to fetch user infos');
+				console.error('Failed to fetch user infos');
 			}
 			
 			const data = await response.json();
@@ -101,7 +100,7 @@ export default function UserProfilePage() {
 			);
 			
 			if (userInfos.length === 0) {
-				throw new Error("No user found with the given email.");
+				console.error("No user found with the given email.");
 			}
 			
 			const user = userInfos[0];
@@ -139,7 +138,7 @@ export default function UserProfilePage() {
 		try {
 			const response = await fetch("/api/projects");
 			if (!response.ok) {
-				throw new Error("Failed to fetch projects");
+				console.error("Failed to fetch projects");
 			}
 			const data = await response.json();
 			
@@ -165,6 +164,8 @@ export default function UserProfilePage() {
 			setLoading(false);
 		}
 	};
+
+	const [customCategories, setCustomCategories] = useState<string[]>([]);
 	
 	const [addProjectFormData, setAddProjectFormData] = useState({
 		title: '',
@@ -249,21 +250,29 @@ export default function UserProfilePage() {
 	
 	// ADD PROJECT ERROR MESSAGE
 	const [addProjectError, setAddProjectError] = useState<string | null>(null);
-	const [addProjectLoading, setAddProjectLoading] = useState(false);
+	const [addProjectLoading, setAddProjectLoading] = useState<boolean>(false);
+	const [isFetchedProject, setIsFetchedProject] = useState<boolean>(false);
+
+	const addCustomCategory = (category: string) => {
+		if (customCategories.includes(category)) return setCustomCategories(customCategories.filter((cat: string) => cat !== category));
+		setCustomCategories((prev) => ([...prev, category]));
+	}
 	
-	const handleSubmitAddProjectForm = async (e: React.FormEvent<HTMLFormElement>) => {
+	const handleSubmitAddProjectForm = async (e: React.FormEvent<HTMLFormElement>, addProject: boolean = false) => {
 		e.preventDefault();
+
 		setAddProjectLoading(true);
 		setAddProjectError(null);
 		
-		const data = {
-			_id: userInfo?._id,
-			user: userInfo?.github,
-			...addProjectFormData
-		}
-		
 		try {
-			const response = await fetch('/api/projects/addProject', {
+			const data = {
+				_id: userInfo?._id,
+				user: userInfo?.github,
+				...addProjectFormData,
+				categories: customCategories
+			}
+
+			const response = await fetch(`/api/projects/${addProject ? 'addProject' : 'fetchProject'}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -274,7 +283,12 @@ export default function UserProfilePage() {
 			const result = await response.json();
 			
 			if (response.ok) {
-				window.location.reload();
+				if (!isFetchedProject) {
+					await addFilters(result.message);
+					setIsFetchedProject(true);
+				} else {
+					window.location.reload();
+				}
 			} else {
 				if (response.status === 409) {
 					setTimeout(() => {
@@ -291,11 +305,24 @@ export default function UserProfilePage() {
 		} catch (error) {
 			console.error('Request failed:', error);
 		} finally {
-			setTimeout(() => {
-				setAddProjectLoading(false);
-			}, 1000)
+			setAddProjectLoading(false);
 		}
 	}
+
+	const [keywords, setKeywords] = useState<string[]>([]);
+
+	const addFilters = async (description: string) => {
+		if (description.length === 0 || !description) return window.location.reload();
+
+		const res = await fetch('/api/keywords', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ description }),
+		});
+
+		const data = await res.json();
+		setKeywords(data.keywords.trim().split(', ').map((word: string) => word.trim()));
+	};
 	
 	const [editProjectError, setEditProjectError] = useState<string | null>(null);
 	const [editProjectLoading, setEditProjectLoading] = useState(false);
@@ -399,7 +426,7 @@ export default function UserProfilePage() {
 			});
 			
 			if (!response.ok) {
-				throw new Error('Failed to update projects');
+				console.error('Failed to update projects');
 			} else {
 				window.location.reload();
 			}
@@ -756,7 +783,10 @@ export default function UserProfilePage() {
 														title: "",
 														category: ""
 													});
-													setAddProjectError("")
+													setAddProjectError("");
+													setIsFetchedProject(false);
+													setKeywords([])
+													setCustomCategories([]);
 												}}
 											><Plus/></Button>
 										</DialogTrigger>
@@ -769,7 +799,7 @@ export default function UserProfilePage() {
 															Add your project here. Click save when you&apos;re done.
 														</DialogDescription>
 													</DialogHeader>
-													<form onSubmit={handleSubmitAddProjectForm}>
+													<form onSubmit={(e) => handleSubmitAddProjectForm(e, isFetchedProject)}>
 														<div className="grid gap-4 py-4">
 															<div className="grid grid-cols-4 items-center gap-4">
 																<Label htmlFor="title" className="text-right">
@@ -802,29 +832,48 @@ export default function UserProfilePage() {
 																		<SelectGroup>
 																			<SelectLabel>Categories</SelectLabel>
 																			
-																			<SelectItem value="frontend">Frontend</SelectItem>
-																			<SelectItem value="backend">Backend</SelectItem>
-																			<SelectItem value="fullstack">Full Stack</SelectItem>
-																			<SelectItem value="android">Android</SelectItem>
-																			<SelectItem value="apple">Apple</SelectItem>
-																			<SelectItem value="ai">AI</SelectItem>
-																			<SelectItem value="machineLearning">Machine Learning</SelectItem>
-																			<SelectItem value="dataAnalysis">Data Analysis</SelectItem>
-																			<SelectItem value="twoD">2D Games</SelectItem>
-																			<SelectItem value="threeD">3D Games</SelectItem>
-																			<SelectItem value="extension">Browser Extension</SelectItem>
-																			<SelectItem value="database">Database Management</SelectItem>
-																			<SelectItem value="orm">ORM</SelectItem>
-																			<SelectItem value="api">API Development</SelectItem>
-																			<SelectItem value="ui">UI Libraries</SelectItem>
+																			<SelectItem value="Front End">Front End</SelectItem>
+																			<SelectItem value="Back End">Back End</SelectItem>
+																			<SelectItem value="Full Stack">Full Stack</SelectItem>
+																			<SelectItem value="Android">Android</SelectItem>
+																			<SelectItem value="Apple">Apple</SelectItem>
+																			<SelectItem value="AI">AI</SelectItem>
+																			<SelectItem value="Machine Learning">Machine Learning</SelectItem>
+																			<SelectItem value="Data Analysis">Data Analysis</SelectItem>
+																			<SelectItem value="2D Games">2D Games</SelectItem>
+																			<SelectItem value="3D Games">3D Games</SelectItem>
+																			<SelectItem value="Browser Extension">Browser Extension</SelectItem>
+																			<SelectItem value="Database Management">Database Management</SelectItem>
+																			<SelectItem value="ORM">ORM</SelectItem>
+																			<SelectItem value="API Development">API Development</SelectItem>
+																			<SelectItem value="UI Libraries">UI Libraries</SelectItem>
 																		</SelectGroup>
 																	</SelectContent>
 																</Select>
 															</div>
 														</div>
-														<DialogFooter>
+														<DialogFooter className={"flex flex-col gap-4"}>
 															<Button type="submit">{addProjectLoading ? <span
-																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : "Save changes"}</Button>
+																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : isFetchedProject ? "Add project" : "Continue"}</Button>
+
+
+															{keywords.length > 0 && (
+																<section className={"flex flex-col gap-4"}>
+																	<h4>Would you like to add custom keywords ?</h4>
+																	<div className={"flex flex-wrap gap-2"}>
+																		{keywords.map((keyword: string, index: number) => (
+																			<Badge
+																				key={index}
+																				className={`cursor-pointer hover:scale-105 duration-150 transition-all ${customCategories.includes(keyword) ? 'scale-105' : ''}`}
+																				onClick={() => addCustomCategory(keyword)}
+																				style={{
+																					backgroundColor: customCategories.includes(keyword) ? "rgb(23, 23, 23, 0.7)" : "",
+																				}}
+																			>{keyword}</Badge>
+																		))}
+																	</div>
+																</section>
+															)}
 														</DialogFooter>
 														
 														{addProjectError ? (
@@ -934,11 +983,15 @@ export default function UserProfilePage() {
 															</Link>
 														</div>
 													</CardTitle>
-													<div className={"flex gap-2"}>
+													<div className={"flex gap-2 flex-wrap"}>
 														<Badge className={"w-fit"}>
 															{project.language ? project.language : "None"}
 														</Badge>
-														<Badge className={"w-fit"}>{categoryPipe(project.category as keyof Category)}</Badge>
+														{Array.isArray(project.categories) && project.categories.map((category: string, index: number) => (
+															<Badge key={index} className="w-fit">
+																{category}
+															</Badge>
+														))}
 													</div>
 												
 												</CardHeader>
