@@ -31,6 +31,6 @@ export async function POST(request: NextRequest) {
         });
         
     } catch (error) {
-        return NextResponse.json({ error: "Failed to generate keywords" }, { status: 500 });
+        console.error(error);
     }
 }
