@@ -1,3 +1,0 @@
-Extract keywords when adding a project
-
-After adding, but before reloading the page, offers to add some customized keywords
