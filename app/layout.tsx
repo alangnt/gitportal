@@ -4,11 +4,10 @@ import "./globals.css";
 
 import {SessionProvider} from "next-auth/react";
 
-import {cookies} from "next/headers"
-import {SidebarProvider} from "@/components/ui/sidebar";
-import {AppSidebar} from "@/components/core/app-sidebar";
-
 import {Analytics} from "@vercel/analytics/react"
+import Sidebar from "@/components/Sidebar";
+
+import React from "react";
 
 const geistSans = localFont({
 	src: "./fonts/GeistVF.woff",
@@ -60,27 +59,17 @@ export default async function RootLayout({
                                          }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const cookieStore = await cookies()
-	const defaultOpen = cookieStore.get("sidebar:state")?.value === "true"
-	
 	return (
 		<html lang="en">
 		<body
-			className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
+			className={`${geistSans.variable} ${geistMono.variable} antialiased flex min-h-screen`}
 		>
 		<SessionProvider>
-			<SidebarProvider
-				style={{
-					"--sidebar-width": "10rem",
-				} as React.CSSProperties}
-				defaultOpen={defaultOpen}
-			>
-				<AppSidebar/>
-				<div className={"flex flex-col items-center w-full"}>
-					{children}
-					<Analytics/>
-				</div>
-			</SidebarProvider>
+			<Sidebar/>
+			<div className={"flex flex-col items-center w-full pl-12"}>
+				{children}
+				<Analytics/>
+			</div>
 		</SessionProvider>
 		</body>
 		</html>
