@@ -18,7 +18,7 @@ type GitProject = {
 	url: string;
 }
 
-export function Extension() {
+function ExtensionComponent() {
 	const searchParams = useSearchParams();
 	
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -348,7 +348,7 @@ export function Extension() {
 export default function ExtensionPage() {
 	return (
 		<Suspense>
-			<Extension/>
+			<ExtensionComponent/>
 		</Suspense>
 	)
 }
