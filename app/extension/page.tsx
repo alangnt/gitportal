@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {Suspense, useEffect, useRef, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import {useQRCode} from "next-qrcode";
 import {toPng} from "html-to-image";
@@ -18,7 +18,7 @@ type GitProject = {
 	url: string;
 }
 
-export default function ExtensionPage() {
+export function Extension() {
 	const searchParams = useSearchParams();
 	
 	const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -342,5 +342,13 @@ export default function ExtensionPage() {
 				</>
 			)}
 		</>
+	)
+}
+
+export default function ExtensionPage() {
+	return (
+		<Suspense>
+			<Extension/>
+		</Suspense>
 	)
 }
