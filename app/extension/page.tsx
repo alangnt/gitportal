@@ -28,25 +28,6 @@ function ExtensionComponent() {
 	const [gitRepo, setGitRepo] = useState<string | undefined>(undefined);
 	const [project, setProject] = useState<GitProject | undefined>(undefined);
 	
-	function parseGitHubUrl(url: string): { owner: string; repo: string } | null {
-		try {
-			const parsedUrl = new URL(url);
-			const parts = parsedUrl.pathname.split('/').filter(Boolean);
-			
-			if (parsedUrl.hostname === "github.com" && parts.length >= 2) {
-				return {
-					owner: parts[0],
-					repo: parts[1]
-				};
-			}
-			
-			return null;
-		} catch (e) {
-			console.error("Invalid GitHub URL", e);
-			return null;
-		}
-	}
-	
 	const fetchProject = async (gitData: { owner: string, repo: string }) => {
 		try {
 			const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
@@ -122,23 +103,18 @@ function ExtensionComponent() {
 	};
 	
 	useEffect(() => {
-		const repoUrl = searchParams.get("gitLink");
+		const repoUser = searchParams.get("gitUser");
+		const repoName = searchParams.get("gitRepo");
 		
-		if (repoUrl) {
-			const parsed = parseGitHubUrl(repoUrl);
+		if (repoUser && repoName) {
+			setGitLink('https://github.com/' + repoUser + '/' + repoName);
+			setGitUser(repoUser);
+			setGitRepo(repoName);
 			
-			if (parsed) {
-				setGitLink(repoUrl);
-				setGitUser(parsed.owner);
-				setGitRepo(parsed.repo);
-				
-				fetchProject({
-					owner: parsed.owner,
-					repo: parsed.repo,
-				}).then(() => setIsLoading(false));
-			} else {
-				console.error("Invalid GitHub repo URL format.");
-			}
+			fetchProject({
+				owner: repoUser,
+				repo: repoName,
+			}).then(() => setIsLoading(false));
 		}
 	}, [searchParams]);
 	
