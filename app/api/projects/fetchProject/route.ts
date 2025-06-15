@@ -63,12 +63,10 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        if (project.description) {
-            return NextResponse.json(
-                {message: project.description},
-                {status: 201}
-            );
-        }
+        return NextResponse.json(
+            {message: project.description || ''},
+            {status: 201}
+        );
     } catch (error) {
         console.error("Error fetching project:", error);
         return NextResponse.json(

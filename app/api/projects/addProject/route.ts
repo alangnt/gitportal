@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 			category: Category,
 			categories: string[]
 		} = await req.json();
-		if (!_id || !user || !title || !categories || !categories.length) {
+		if (!_id || !user || !title) {
 			return NextResponse.json(
 				{message: "User and title are required"},
 				{status: 400}
