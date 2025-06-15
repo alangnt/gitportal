@@ -66,17 +66,16 @@ export default function Sidebar() {
 						
 						<section
 							className={`flex flex-col gap-4 ${open ? '' : status === "authenticated" ? '-translate-y-32' : '-translate-y-8'} transition-all duration-200`}>
-							{tabs.map((tab: Tab, i: number) => (
-								<>
-									{tab.authenticated && status !== "authenticated" ? null : (
-										<Link key={i} href={tab.url} className={'flex items-center gap-2 text-gray-600 text-sm'}
-										      onClick={() => setOpen(false)}>
-											<tab.icon className={'w-4 min-w-4'}/>
-											<p className={'overflow-hidden truncate'}>{tab.name}</p>
-										</Link>
-									)}
-								</>
-							))}
+							{tabs.map((tab: Tab, i: number) => {
+								if (tab.authenticated && status !== "authenticated") return null;
+								return (
+									<Link key={i} href={tab.url} className={'flex items-center gap-2 text-gray-600 text-sm'}
+									      onClick={() => setOpen(false)}>
+										<tab.icon className={'w-4 min-w-4'} />
+										<p className={'overflow-hidden truncate'}>{tab.name}</p>
+									</Link>
+								);
+							})}
 						</section>
 					</div>
 				</section>
