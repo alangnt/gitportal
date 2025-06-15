@@ -271,6 +271,8 @@ export default function UserProfilePage() {
 				...addProjectFormData,
 				categories: customCategories
 			}
+			
+			console.log(data);
 
 			const response = await fetch(`/api/projects/${addProject ? 'addProject' : 'fetchProject'}`, {
 				method: 'POST',
@@ -285,7 +287,6 @@ export default function UserProfilePage() {
 			if (response.ok) {
 				if (!isFetchedProject) {
 					await addFilters(result.message);
-					setIsFetchedProject(true);
 				} else {
 					window.location.reload();
 				}
@@ -309,11 +310,9 @@ export default function UserProfilePage() {
 		}
 	}
 
-	const [keywords, setKeywords] = useState<string[]>([]);
+	const [keywords, setKeywords] = useState<string[] | undefined>(undefined);
 
 	const addFilters = async (description: string) => {
-		if (description.length === 0 || !description) return window.location.reload();
-
 		const res = await fetch('/api/keywords', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -321,7 +320,10 @@ export default function UserProfilePage() {
 		});
 
 		const data = await res.json();
-		setKeywords(data.keywords.trim().split(', ').map((word: string) => word.trim()));
+		if (data.message.length > 0) setKeywords(data.message.trim().split(', ').map((word: string) => word.trim()));
+		else setKeywords(undefined);
+		
+		setIsFetchedProject(true);
 	};
 	
 	const [editProjectError, setEditProjectError] = useState<string | null>(null);
@@ -524,6 +526,10 @@ export default function UserProfilePage() {
 			})
 		}
 	}, [selectedProject, editUserInfo]);
+	
+	useEffect(() => {
+		console.log(isFetchedProject)
+	}, [isFetchedProject]);
 	
 	if (loading) return <div>Loading...</div>;
 	
@@ -854,10 +860,9 @@ export default function UserProfilePage() {
 														</div>
 														<DialogFooter className={"flex flex-col gap-4"}>
 															<Button type="submit">{addProjectLoading ? <span
-																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : isFetchedProject ? "Add project" : "Continue"}</Button>
-
-
-															{keywords.length > 0 && (
+																className={"animate-spin rounded-full w-4 h-4 border-t-blue-500 border-2"}></span> : !isFetchedProject ? "Add project" : "Continue"}</Button>
+															
+															{keywords && keywords.length > 0 ? (
 																<section className={"flex flex-col gap-4"}>
 																	<h4 className={'text-center'}>Would you like to add custom keywords ?</h4>
 																	<div className={"flex flex-wrap justify-center gap-2"}>
@@ -873,6 +878,12 @@ export default function UserProfilePage() {
 																		))}
 																	</div>
 																</section>
+															) : (
+																<>
+																	{isFetchedProject && (
+																		<p className={'text-xs text-center place-self-center'}>No keywords found.</p>
+																	)}
+																</>
 															)}
 														</DialogFooter>
 														
