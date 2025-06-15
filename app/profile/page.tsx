@@ -321,7 +321,7 @@ export default function UserProfilePage() {
 		});
 
 		const data = await res.json();
-		setKeywords(data.keywords.trim().split(', ').map((word: string) => word.trim()));
+		setKeywords(data.message.trim().split(', ').map((word: string) => word.trim()));
 	};
 	
 	const [editProjectError, setEditProjectError] = useState<string | null>(null);
