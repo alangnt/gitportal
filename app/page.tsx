@@ -354,7 +354,7 @@ export default function Home() {
 								<Dialog key={project._id}>
 									<DialogTrigger asChild>
 										<Card
-											className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-fit"}
+											className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow flex flex-col justify-between"}
 											key={project._id}>
 											<CardHeader>
 												<CardTitle className="flex items-center justify-between">
@@ -417,7 +417,7 @@ export default function Home() {
 											</CardContent>
 											<CardFooter className="flex justify-between text-sm text-gray-500">
 												<div className={"flex flex-col lg:flex-row justify-between gap-2 w-full"}>
-													<div className="flex items-center gap-4">
+													<div className="flex items-end gap-4">
                               <span className="flex items-center gap-1">
                                 <Star className="h-4 w-4"/>
 	                              {project.stars}
