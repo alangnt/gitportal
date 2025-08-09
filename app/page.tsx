@@ -146,32 +146,26 @@ export default function Home() {
 	const [userInfo, setUserInfo] = useState<User | null>(null);
 	
 	// FETCH USER INFO
-	const fetchUserProfile = async () => {
+	const fetchUserProfile = async (signal?: AbortSignal) => {
+		// Wait for session to be ready
+		if (!session?.user?.email) return;
 		try {
-			if (!session?.user?.email) {
-				console.error("User session is not available.");
+			const res = await fetch('/api/users/me', {
+				method: 'GET',
+				cache: 'no-store',
+				headers: { Accept: 'application/json' },
+				signal,
+			});
+			if (!res.ok) {
+				console.error('Failed to fetch user info');
+				return;
 			}
-			
-			const response = await fetch('/api/users');
-			if (!response?.ok) {
-				console.error('Failed to fetch user infos');
-			}
-			
-			const data = await response.json();
-			const userInfos = data.data.filter(
-				(user: User) => user.email === session?.user?.email
-			);
-			
-			if (userInfos.length === 0) {
-				console.error("No user found with the given email.");
-			}
-			
-			const user = userInfos[0];
-			setUserInfo(user);
-			
-			setLoading(false);
-		} catch (error) {
-			console.error(error);
+			const { data } = await res.json();
+
+			setUserInfo(data);
+		} catch (err: any) {
+			if (err.name !== 'AbortError') console.error(err);
+		} finally {
 			setLoading(false);
 		}
 	};
@@ -241,6 +235,15 @@ export default function Home() {
 		fetchProjects();
 		handleSortBy("new");
 	}, []);
+
+	useEffect(() => {
+		if (status === 'authenticated') {
+			const controller = new AbortController();
+			fetchUserProfile(controller.signal);
+			return () => controller.abort();
+		}
+		if (status === 'unauthenticated') setLoading(false);
+	}, [status, session?.user?.email]);
 	
 	useEffect(() => {
 		let filteredProjects: Project[] = projects;
