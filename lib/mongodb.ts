@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 if (!process.env.MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable");
@@ -22,3 +22,4 @@ if (process.env.NODE_ENV === "development") {
 }
 
 export default clientPromise;
+export const oid = (id: string) => new ObjectId(id);

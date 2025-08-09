@@ -89,22 +89,14 @@ export default function UserProfilePage() {
 				console.error("User session is not available.");
 			}
 			
-			const response = await fetch('/api/users');
+			const response = await fetch('/api/users/me');
 			if (!response?.ok) {
 				console.error('Failed to fetch user infos');
 			}
 			
-			const data = await response.json();
-			const userInfos = data.data.filter(
-				(user: User) => user.email === session?.user?.email
-			);
+			const { data } = await response.json();
 			
-			if (userInfos.length === 0) {
-				console.error("No user found with the given email.");
-			}
-			
-			const user = userInfos[0];
-			setUserInfo(user);
+			setUserInfo(data);
 			setUserFetched(true);
 			
 			setLoading(false);
