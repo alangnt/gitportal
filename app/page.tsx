@@ -163,8 +163,12 @@ export default function Home() {
 			const { data } = await res.json();
 
 			setUserInfo(data);
-		} catch (err: any) {
-			if (err.name !== 'AbortError') console.error(err);
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				console.error(err.message);
+			} else {
+				console.error('An unknown error occurred');
+			}
 		} finally {
 			setLoading(false);
 		}
