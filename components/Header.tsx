@@ -44,15 +44,6 @@ export default function Header() {
 			
 			<NavigationMenu>
 				<NavigationMenuList>
-					<Link
-						href="https://www.producthunt.com/posts/gitportal?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-gitportal"
-						target="_blank">
-						<Image
-							src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=795574&theme=light&t=1737322305297"
-							alt="GitPortal - Your&#0032;Gateway&#0032;to&#0032;Open&#0032;Source&#0032;Collaboration | Product Hunt"
-							width="200"
-							height="40"/>
-					</Link>
 					{status === "authenticated" && (
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
@@ -110,36 +101,7 @@ export default function Header() {
 											<GitHubIcon/>
 											<span>Sign In</span>
 										</Button>
-										
-										{/* TODO: add Google connexion later */}
 									</div>
-									
-									{/* TODO: add manual connexion later
-									<div className="relative w-full hidden">
-										<div className="absolute inset-0 flex items-center">
-											<span className="w-full border-t"/>
-										</div>
-										<div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
-                      </span>
-										</div>
-									</div>
-									
-									<form className="grid flex-1 gap-4">
-										<div>
-											<Label htmlFor={"email"} className={"font-semibold"}>Email</Label>
-											<Input type={"email"} placeholder={"jane.doe@example.com"}></Input>
-										</div>
-										<div>
-											<Label htmlFor={"password"} className={"font-semibold"}>Password</Label>
-											<Input type={"password"}></Input>
-										</div>
-										<Button type="submit">
-											Create account
-										</Button>
-									</form>
-									 */}
 								</div>
 							</DialogContent>
 						</Dialog>
