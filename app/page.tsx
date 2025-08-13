@@ -137,6 +137,9 @@ export default function Home() {
 		});
 		
 		const result = await response.json();
+
+		// User profile already exists
+		if (result.status === 409) return;
 		
 		if (!result) {
 			console.error('Failed to create user');

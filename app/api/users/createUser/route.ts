@@ -17,8 +17,7 @@ export async function POST(req: NextRequest) {
 		const existingUser = await collection.findOne({email});
 		if (existingUser) {
 			return NextResponse.json(
-				{message: "User with this email already exists"},
-				{status: 409}
+				{ message: "User with this email already exists", status: 409 },
 			);
 		}
 		
