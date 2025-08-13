@@ -89,7 +89,7 @@ export default function UserProfilePage() {
 				console.error("User session is not available.");
 			}
 			
-			const response = await fetch('/api/users/me');
+			const response = await fetch('/api/users');
 			if (!response?.ok) {
 				console.error('Failed to fetch user infos');
 			}
@@ -210,7 +210,7 @@ export default function UserProfilePage() {
 		};
 		
 		try {
-			const response = await fetch('/api/users/editUser', {
+			const response = await fetch('/api/users', {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json'

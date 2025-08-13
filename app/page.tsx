@@ -128,7 +128,7 @@ export default function Home() {
 	const createUserProfile = async () => {
 		const data = {name: session?.user?.name, email: session?.user?.email, image: session?.user?.image};
 		
-		const response = await fetch("/api/users/createUser", {
+		const response = await fetch("/api/users", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -149,11 +149,12 @@ export default function Home() {
 	const [userInfo, setUserInfo] = useState<User | null>(null);
 	
 	// FETCH USER INFO
+	// TODO: Fix signal is aborted without reason bug
 	const fetchUserProfile = async (signal?: AbortSignal) => {
 		// Wait for session to be ready
 		if (!session?.user?.email) return;
 		try {
-			const res = await fetch('/api/users/me', {
+			const res = await fetch('/api/users', {
 				method: 'GET',
 				cache: 'no-store',
 				headers: { Accept: 'application/json' },

@@ -1,25 +1,26 @@
 import { MongoClient, ObjectId } from "mongodb";
 
 if (!process.env.MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
+  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
 }
 
-const uri: string = process.env.MONGODB_URI;
-const options = {};
+const uri = process.env.MONGODB_URI;
+const options = { appName: "gitportal" };
 
 let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+  const globalWithMongo = global as typeof globalThis & {
+    _mongoClient?: MongoClient;
+  };
+
+  if (!globalWithMongo._mongoClient) {
+    globalWithMongo._mongoClient = new MongoClient(uri, options);
   }
-  clientPromise = global._mongoClientPromise;
+  client = globalWithMongo._mongoClient;
 } else {
   client = new MongoClient(uri, options);
-  clientPromise = client.connect();
 }
 
-export default clientPromise;
+export default client;
 export const oid = (id: string) => new ObjectId(id);
