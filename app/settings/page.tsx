@@ -36,7 +36,7 @@ export default function SettingsPage() {
 				throw new Error("User session is not available.");
 			}
 			
-			const response = await fetch('/api/users/me');
+			const response = await fetch('/api/users');
 			if (!response?.ok) {
 				throw new Error('Failed to fetch user infos');
 			}
@@ -137,7 +137,7 @@ export default function SettingsPage() {
 		}
 		
 		try {
-			const response = await fetch('/api/users/deleteUser', {
+			const response = await fetch('/api/users', {
 				method: "DELETE",
 				headers: {
 					"Content-Type": "application/json"
