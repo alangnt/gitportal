@@ -43,11 +43,11 @@ export default function Sidebar() {
 	
 	return (
 		<>
-			<div className={`absolute ${open ? 'bg-black/50 z-20 !fixed w-screen h-screen' : ''}`}>
+			<div className={`absolute ${open ? 'bg-black/50 z-20 fixed! w-screen h-screen' : ''}`}>
 				<section
 					className={`${open ? 'w-64 z-10' : 'w-12'} transition-all duration-400 fixed bg-white h-full border-r flex flex-col gap-4 p-4`}>
 					<div
-						className={`flex justify-center items-center cursor-pointer h-8 ${open ? 'border rounded-md shadow-sm h-12 pr-2' : 'w-full'}`}
+						className={`flex justify-center items-center cursor-pointer h-8 ${open ? 'border rounded-md shadow-xs h-12 pr-2' : 'w-full'}`}
 						onClick={() => setOpen(!open)}>
 						{open ? <span className={'flex items-center text-sm'}><ChevronLeft/> Reduce</span> :
 							<ChevronsRight/>}

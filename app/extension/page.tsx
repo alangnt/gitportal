@@ -209,7 +209,7 @@ function ExtensionComponent() {
 															...prevColors,
 															bgColor: color
 														}))}
-														className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+														className={"w-10 border hover:scale-105 hover:shadow-sm duration-150 transition-all"}
 													></Button>
 												))}
 											</div>
@@ -223,7 +223,7 @@ function ExtensionComponent() {
 													className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
 												></Input>
 												<div
-													className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+													className={"flex items-center justify-center w-10 h-10 border rounded-md"}
 													style={{
 														backgroundColor: cardColors.bgColor
 													}}
@@ -245,7 +245,7 @@ function ExtensionComponent() {
 															...prevColors,
 															textColor: color
 														}))}
-														className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+														className={"w-10 border hover:scale-105 hover:shadow-sm duration-150 transition-all"}
 													></Button>
 												))}
 											</div>
@@ -259,7 +259,7 @@ function ExtensionComponent() {
 													className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
 												></Input>
 												<div
-													className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+													className={"flex items-center justify-center w-10 h-10 border rounded-md"}
 													style={{
 														backgroundColor: cardColors.textColor
 													}}
@@ -281,7 +281,7 @@ function ExtensionComponent() {
 															...prevColors,
 															subTextColor: color
 														}))}
-														className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+														className={"w-10 border hover:scale-105 hover:shadow-sm duration-150 transition-all"}
 													></Button>
 												))}
 											</div>
@@ -295,7 +295,7 @@ function ExtensionComponent() {
 													className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
 												></Input>
 												<div
-													className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+													className={"flex items-center justify-center w-10 h-10 border rounded-md"}
 													style={{
 														backgroundColor: cardColors.subTextColor
 													}}

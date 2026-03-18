@@ -178,7 +178,7 @@ export default function SettingsPage() {
 				<h2 className={"text-3xl font-semibold"}>Settings</h2>
 				
 				<Card
-					className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+					className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow-sm"}>
 					<CardHeader>
 						<CardTitle>Privacy and Terms</CardTitle>
 						<CardDescription>Review our privacy policy and terms of service</CardDescription>
@@ -277,7 +277,7 @@ export default function SettingsPage() {
 				
 				{status === "authenticated" && (
 					<Card
-						className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}>
+						className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow-sm"}>
 						<CardHeader>
 							<CardTitle>Delete Account</CardTitle>
 							<CardDescription>Permanently delete your account and all associated data</CardDescription>

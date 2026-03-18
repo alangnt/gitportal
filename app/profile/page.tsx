@@ -534,7 +534,7 @@ export default function UserProfilePage() {
 					<main className={"flex flex-col gap-4 grow w-full max-w-[1280px] px-4 max-lg:px-6 mt-4 mb-10"}>
 						<div className={"grid gap-8 md:grid-cols-2"}>
 							<Card
-								className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+								className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 								<CardHeader className="flex flex-row items-center gap-4">
 									<Avatar size={"xl"}>
 										<AvatarImage src={session?.user?.image || userInfo?.image}/>
@@ -719,7 +719,7 @@ export default function UserProfilePage() {
 							
 							<section className="grid gap-4 md:grid-cols-2">
 								<Card
-									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 									<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 										<CardTitle className="text-sm font-medium">Total Projects</CardTitle>
 										<GitPullRequest className="h-4 w-4 text-muted-foreground"/>
@@ -729,7 +729,7 @@ export default function UserProfilePage() {
 									</CardContent>
 								</Card>
 								<Card
-									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 									<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 										<CardTitle className="text-sm font-medium">Contributions</CardTitle>
 										<GitPullRequest className="h-4 w-4 text-muted-foreground"/>
@@ -739,7 +739,7 @@ export default function UserProfilePage() {
 									</CardContent>
 								</Card>
 								<Card
-									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 									<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 										<CardTitle className="text-sm font-medium">Total Stars</CardTitle>
 										<Star className="h-4 w-4 text-muted-foreground"/>
@@ -749,7 +749,7 @@ export default function UserProfilePage() {
 									</CardContent>
 								</Card>
 								<Card
-									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+									className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 									<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 										<CardTitle className="text-sm font-medium">Total Forks</CardTitle>
 										<GitFork className="h-4 w-4 text-muted-foreground"/>
@@ -764,7 +764,7 @@ export default function UserProfilePage() {
 						<Tabs defaultValue="created" className="w-full">
 							<div className="flex flex-col sm:flex-row items-center gap-2">
 								<div>
-									<TabsList className={"shadow"}>
+									<TabsList className={"shadow-sm"}>
 										<TabsTrigger value="created">Created Projects</TabsTrigger>
 										<TabsTrigger value="contributed">Contributed Projects</TabsTrigger>
 									</TabsList>
@@ -775,7 +775,7 @@ export default function UserProfilePage() {
 										<DialogTrigger asChild>
 											<Button
 												variant={"outline"}
-												className={"shadow"}
+												className={"shadow-sm"}
 												onClick={() => {
 													setAddProjectFormData({
 														title: "",
@@ -908,7 +908,7 @@ export default function UserProfilePage() {
 									<section className={"flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
 										{projects.map((project: Project) => (
 											<Card
-												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow h-fit"}
+												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow-sm h-fit"}
 												key={project._id}
 											>
 												<CardHeader>
@@ -1110,7 +1110,7 @@ export default function UserProfilePage() {
 																							...prevColors,
 																							bgColor: color
 																						}))}
-																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																						className={"w-10 border hover:scale-105 hover:shadow-sm duration-150 transition-all"}
 																					></Button>
 																				))}
 																			</div>
@@ -1124,7 +1124,7 @@ export default function UserProfilePage() {
 																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
 																				></Input>
 																				<div
-																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					className={"flex items-center justify-center w-10 h-10 border rounded-md"}
 																					style={{
 																						backgroundColor: cardColors.bgColor
 																					}}
@@ -1146,7 +1146,7 @@ export default function UserProfilePage() {
 																							...prevColors,
 																							textColor: color
 																						}))}
-																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																						className={"w-10 border hover:scale-105 hover:shadow-sm duration-150 transition-all"}
 																					></Button>
 																				))}
 																			</div>
@@ -1160,7 +1160,7 @@ export default function UserProfilePage() {
 																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
 																				></Input>
 																				<div
-																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					className={"flex items-center justify-center w-10 h-10 border rounded-md"}
 																					style={{
 																						backgroundColor: cardColors.textColor
 																					}}
@@ -1182,7 +1182,7 @@ export default function UserProfilePage() {
 																							...prevColors,
 																							subTextColor: color
 																						}))}
-																						className={"w-10 border-[1px] hover:scale-105 hover:shadow duration-150 transition-all"}
+																						className={"w-10 border hover:scale-105 hover:shadow-sm duration-150 transition-all"}
 																					></Button>
 																				))}
 																			</div>
@@ -1196,7 +1196,7 @@ export default function UserProfilePage() {
 																					className={"absolute top-0 right-0 opacity-0 cursor-pointer"}
 																				></Input>
 																				<div
-																					className={"flex items-center justify-center w-10 h-10 border-[1px] rounded-md"}
+																					className={"flex items-center justify-center w-10 h-10 border rounded-md"}
 																					style={{
 																						backgroundColor: cardColors.subTextColor
 																					}}
@@ -1229,7 +1229,7 @@ export default function UserProfilePage() {
 									<section className={"grid md:grid-cols-2 lg:grid-cols-3 gap-4"}>
 										{contributedProjects.map((project: Project) => (
 											<Card
-												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow"}
+												className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow-sm"}
 												key={project._id}>
 												<CardHeader>
 													<CardTitle className="flex items-center justify-between">

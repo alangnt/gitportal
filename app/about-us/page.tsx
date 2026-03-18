@@ -17,7 +17,7 @@ export default function AboutPage() {
 					<section className="mb-12">
 						<h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
 						<Card
-							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 							<CardContent className="pt-6">
 								<p className="mb-4">
 									GitPortal is dedicated to empowering developers by providing a platform to showcase their
@@ -35,7 +35,7 @@ export default function AboutPage() {
 					<section className="mb-12">
 						<h2 className="text-2xl font-semibold mb-4">Meet the Founder</h2>
 						<Card
-							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 							<CardHeader>
 								<div className="flex items-center gap-4">
 									<Image
@@ -96,7 +96,7 @@ export default function AboutPage() {
 					<section className="mb-12">
 						<h2 className="text-2xl font-semibold mb-4">Our Vision</h2>
 						<Card
-							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 							<CardContent className="pt-6">
 								<p className="mb-4">
 									At GitPortal, we envision a future where:
@@ -124,7 +124,7 @@ export default function AboutPage() {
 					<section className="mb-12">
 						<h2 className="text-2xl font-semibold mb-4">Contribute</h2>
 						<Card
-							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 							<CardContent className="pt-6">
 								<p className="mb-6">
 									GitPortal is a labor of love, and we&apos;re always looking for support to help us grow and
@@ -170,7 +170,7 @@ export default function AboutPage() {
 					<section>
 						<h2 className="text-2xl font-semibold mb-4">Get Involved</h2>
 						<Card
-							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow"}>
+							className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black duration-150 transition-all shadow-sm"}>
 							<CardContent className="pt-6">
 								<p className="mb-4">
 									GitPortal is more than just a platform – it&apos;s a community. We welcome contributions,

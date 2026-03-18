@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 	title: "GitPortal",
 	description: "Your Gateway to Open Source Collaboration",
 	applicationName: "GitPortal",
-	authors: [{name: "Alan Geirnaert", url: "https://alan.geirnaert.com"}],
+	authors: [{name: "Alan Geirnaert", url: "https://alangeirnaert.ch"}],
 	creator: "Alan Geirnaert",
 	publisher: "Vercel",
 	generator: "Next.js",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 	icons: {icon: "/icons/icon.png", apple: "/icons/icon.png"},
 	openGraph: {
 		type: "website",
-		url: "https://gitportal.org",
+		url: "https://gitportal.vercel.app",
 		title: "GitPortal",
 		description: "Your Gateway to Open Source Collaboration",
 		siteName: "GitPortal",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
 		title: "GitPortal",
 		statusBarStyle: "black-translucent"
 	},
-	bookmarks: "https://gitportal.org",
+	bookmarks: "https://gitportal.vercel.app",
 };
 
 export default async function RootLayout({

@@ -287,7 +287,7 @@ export default function Home() {
 							value={searchQuery}
 							onChange={handleSearch}
 							placeholder={"Find an open source project now..."}
-							className={"w-full shadow"}
+							className={"w-full shadow-sm"}
 						/>
 						<Button className={'absolute right-0'} onClick={() => setSearchQuery('')} variant={'ghost'}><X/></Button>
 					</section>
@@ -361,7 +361,7 @@ export default function Home() {
 								<Dialog key={project._id}>
 									<DialogTrigger asChild>
 										<Card
-											className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow flex flex-col justify-between"}
+											className={"sm:hover:-translate-y-1 sm:hover:-translate-x-1 hover:border-black cursor-pointer duration-150 transition-all shadow-sm flex flex-col justify-between"}
 											key={project._id}>
 											<CardHeader>
 												<CardTitle className="flex items-center justify-between">
